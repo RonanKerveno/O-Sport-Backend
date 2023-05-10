@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const eventsController = require('./controllers/eventsController');
+const eventsController = require('../app/controllers/eventsController');
 
 
 //récupère la liste de tous les événements.

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const sportsController = require('./controllers/sportsController');
+const sportsController = require('../app/controllers/sportsController');
 
 //récupère la liste de tous les sports.
 router.get('/', sportsController.getAllSports)

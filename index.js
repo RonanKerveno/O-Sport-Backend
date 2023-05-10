@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const path = require('path');
 const express = require('express');
-const router = require('./app/routers');
+const router = require('./routers');
 const session = require('express-session');
 
 //const userMiddleware = require('./app/middleware/user');
@@ -12,9 +12,9 @@ const port = process.env.PORT || 3000;
 
 const app = express();
 
+/*
 app.use(express.urlencoded({extended: true}))
 
-/*
 // On initialise la SESSION si elle n'est pas déjà initialisée
 app.use(session({
    secret: "Guess it!", // le "secret" qui sert à générer les tokens...
