@@ -5,8 +5,8 @@ const express = require('express');
 const router = require('./app/routers');
 const session = require('express-session');
 
-const userMiddleware = require('./app/middleware/user');
-const adminMiddleware = require('./app/middleware/user');
+//const userMiddleware = require('./app/middleware/user');
+//const adminMiddleware = require('./app/middleware/user');
 
 const port = process.env.PORT || 3000;
 
@@ -32,9 +32,9 @@ app.use(session({
 
 // JUSTE AVANT LE ROUTEUR : on utilise un middleware pour vérifier l'état de l'utilisateur
 
-app.use(userMiddleware);
+//app.use(userMiddleware);
 
-app.use(adminMiddleware);
+//app.use(adminMiddleware);
 
 app.use(router);
 

@@ -6,8 +6,7 @@ const Users = require('./users');
 
 
 
-// Les Users participent aux évènements
-
+// Les Users peuvent participer à plusieurs évènements
 Users.hasMany(Events, {
     as: "events",
     through: "users_join_events",
@@ -15,26 +14,53 @@ Users.hasMany(Events, {
     otherKey: "user_id"
 });
 
-// lier plusieurs utilisateurs à un événement
+// Un évènement peut avoir plusieurs participants
 Events.hasMany(Users, {
     as: "users",
     through: "users_join_events",
-    foreignKey: "user_id",
-    otherKey: "event_id"
+    foreignKey: "event_id",
+    otherKey: "user_id"
 });
 
-// les Users créent un évènement
-Users.hasMany(Events, {
-    as: "events",
+// les Users peuvent créer un évènement
+Users.belongsToMany(Events, {
+    as: "created_event",
+    foreignKey: "user_id"
 });
 
+// Un évènement est créé par un user
+Events.belongsTo(Users, {
+    as: "author",
+    foreignKey: "user_id"
+});
 
+// Un utilisateur peut avoir plusieurs sports favoris
 Users.hasMany(Sports, {
-    as: "sports",
+    as: "favorite_sport",
     through: "users_like_sports",
     foreignKey: "sport_id",
     otherKey: "user_id"
 });
 
-// pour tout exporter d'un coup :
+// Un sport peut faire parti des favoris de plusieurs utilisateurs
+Sports.hasMany(Users, {
+    as: "sports_fan",
+    through: "users_like_sports",
+    foreignKey: "sport_id",
+    otherKey: "user_id"
+});
+
+// Un évènement peut contenir plusieurs sports
+Events.belongsTo(Sports, {
+    as: "sport",
+    foreignKey: "sport_id"
+});
+
+// Un sport peut contenir plusieurs évènements
+Sports.hasMany(Events, {
+    as: "sport_events",
+    foreignKey: "sport_id"
+});
+
+// Pour tout exporter d'un coup :
 module.exports = { Users, Events, Sports };

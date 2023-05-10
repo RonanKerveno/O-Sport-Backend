@@ -5,6 +5,7 @@ require('dotenv').config();
 
 
 // const pgUrl = `postgres://oquiz:oquiz@localhost/oquiz`
+
 const pgUrl = process.env.PG_URL;
 
 const sequelize = new Sequelize(pgUrl, {
@@ -15,3 +16,4 @@ const sequelize = new Sequelize(pgUrl, {
 });
 
 module.exports = sequelize;
+
