@@ -11,9 +11,10 @@ const router = require('./routers');
 // const userMiddleware = require('./app/middleware/user');
 // const adminMiddleware = require('./app/middleware/user');
 
-const port = process.env.PORT || 3000;
-
 const app = express();
+const port = process.env.PORT || 4000;
+
+
 
 /*
 app.use(express.urlencoded({extended: true}))
@@ -31,16 +32,18 @@ app.use(session({
 // */
 //
 
-// app.use(express.static(path.join(__dirname, './assets')))
+// app.use(express.static(path.join(__dirname, './assets')));
 
 // JUSTE AVANT LE ROUTEUR : on utilise un middleware pour vérifier l'état de l'utilisateur
 
 // app.use(userMiddleware);
 
 // app.use(adminMiddleware);
+router();
+// app.use(router);
+// const routers = require('./routers');
+// routers(app);
 
-app.use(router);
-
-app.listen(port), (_) => {
+app.listen(port, () => {
   console.log(`http://localhost:${port}`);
-};
+});

@@ -1,14 +1,22 @@
-const usersCtrl = require('./users');
+/* eslint-disable func-names */
 
-/*
-const eventsCtrl = require('./events');
-const sportsCtrl = require('./sports');
-*/
+// eslint-disable-next-line no-unused-vars
+const express = require('express');
+// eslint-disable-next-line no-unused-vars
+const app = express.Router();
 
-module.exports = function (app) {
-  app.use('/users', usersCtrl);
+const usersController = require('./users');
+
+module.exports = function () {
+  console.log('youhou');
+  app.use('/users', usersController);
+  
   /*
-    app.use('/events', eventsCtrl)
-    app.use('/sports', sportsCtrl);
-    */
+  const eventsCtrl = require('./events');
+  const sportsCtrl = require('./sports');
+  */
+  /*
+  app.use('/events', eventsCtrl)
+  app.use('/sports', sportsCtrl);
+  */
 };

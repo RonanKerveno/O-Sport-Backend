@@ -1,15 +1,19 @@
+/* eslint-disable no-unused-vars */
 const { Users } = require('../models');
+
+console.log("bla");
 
 const usersController = {
 
-  async getAllUsers(req, res) {
+  async getAllUsers(_,res) {
+    console.log("bla2");
     try {
       const result = await Users.findAll();
-      console.log(JSON.stringify(result, null, 2));
+      console.log(result);
     } catch (error) {
       console.log(error);
     }
-  },
+  }
 
 /*
   async getOneUser(req, res) {
@@ -96,4 +100,5 @@ const usersController = {
   },
   */
 };
+console.log("bla3");
 module.exports = usersController;
