@@ -1,12 +1,15 @@
+/* eslint-disable no-sequences */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-vars */
 require('dotenv').config();
 
 const path = require('path');
 const express = require('express');
-const router = require('./routers');
 const session = require('express-session');
+const router = require('./routers');
 
-//const userMiddleware = require('./app/middleware/user');
-//const adminMiddleware = require('./app/middleware/user');
+// const userMiddleware = require('./app/middleware/user');
+// const adminMiddleware = require('./app/middleware/user');
 
 const port = process.env.PORT || 3000;
 
@@ -26,24 +29,18 @@ app.use(session({
    }
 }));
 // */
-// 
+//
 
 // app.use(express.static(path.join(__dirname, './assets')))
 
 // JUSTE AVANT LE ROUTEUR : on utilise un middleware pour vérifier l'état de l'utilisateur
 
-//app.use(userMiddleware);
+// app.use(userMiddleware);
 
-//app.use(adminMiddleware);
+// app.use(adminMiddleware);
 
 app.use(router);
 
-app.listen(port, _ => {
-   console.log(`http://localhost:${port}`);
-});
-
-
-
-
-
-
+app.listen(port), (_) => {
+  console.log(`http://localhost:${port}`);
+};

@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const usersController = require('../app/controllers/usersController');
 
-
-//récupère tous les utilisateurs.
-router.get('/', usersController.getAllUsers)
+// récupère tous les utilisateurs.
+router.get('/', usersController.getAllUsers);
+/*
 // récupère l’utilisateur ciblé par l’ID.
 router.get('/:id', usersController.getOneUser)
 //crée un nouvel utilisateur.
@@ -25,6 +25,6 @@ router.post('/:user_id/sports/:sport_id', usersController.addOneSportToOneUser)
 //supprime le sport identifié par son ID à l’utilisateur identifié par son ID.
 router.delete('/:user_id/sports/:sport_id', usersController.deleteOneSportToOneUser)
 
-
+*/
 
 module.exports = router;

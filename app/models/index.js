@@ -1,65 +1,63 @@
-// On va récupérer tous les modèles du projet : 
+// On va récupérer tous les modèles du projet :
 
 const Events = require('./events');
 const Sports = require('./sports');
 const Users = require('./users');
 
-
-
 // Les Users peuvent participer à plusieurs évènements
-Users.hasMany(Events, {
-    as: "events",
-    through: "users_join_events",
-    foreignKey: "event_id",
-    otherKey: "user_id"
+Users.belongsToMany(Events, {
+  as: 'events',
+  through: 'users_join_events',
+  foreignKey: 'event_id',
+  otherKey: 'user_id',
 });
 
 // Un évènement peut avoir plusieurs participants
-Events.hasMany(Users, {
-    as: "users",
-    through: "users_join_events",
-    foreignKey: "event_id",
-    otherKey: "user_id"
+Events.belongsToMany(Users, {
+  as: 'users',
+  through: 'users_join_events',
+  foreignKey: 'event_id',
+  otherKey: 'user_id',
 });
 
 // les Users peuvent créer un évènement
-Users.belongsToMany(Events, {
-    as: "created_event",
-    foreignKey: "user_id"
+Users.belongsTo(Events, {
+  as: 'created_event',
+  foreignKey: 'user_id',
 });
 
 // Un évènement est créé par un user
 Events.belongsTo(Users, {
-    as: "author",
-    foreignKey: "user_id"
+  as: 'creator',
+  foreignKey: 'user_id',
 });
 
 // Un utilisateur peut avoir plusieurs sports favoris
-Users.hasMany(Sports, {
-    as: "favorite_sport",
-    through: "users_like_sports",
-    foreignKey: "sport_id",
-    otherKey: "user_id"
+Users.belongsToMany(Sports, {
+  as: 'favorite_sport',
+  through: 'users_like_sports',
+  foreignKey: 'sport_id',
+  otherKey: 'user_id',
 });
 
 // Un sport peut faire parti des favoris de plusieurs utilisateurs
-Sports.hasMany(Users, {
-    as: "sports_fan",
-    through: "users_like_sports",
-    foreignKey: "sport_id",
-    otherKey: "user_id"
+Sports.belongsToMany(Users, {
+  as: 'sports_fan',
+  through: 'users_like_sports',
+  foreignKey: 'sport_id',
+  otherKey: 'user_id',
 });
 
 // Un évènement peut contenir plusieurs sports
 Events.belongsTo(Sports, {
-    as: "sport",
-    foreignKey: "sport_id"
+  as: 'sport',
+  foreignKey: 'sport_id',
 });
 
 // Un sport peut contenir plusieurs évènements
 Sports.hasMany(Events, {
-    as: "sport_events",
-    foreignKey: "sport_id"
+  as: 'sport_events',
+  foreignKey: 'sport_id',
 });
 
 // Pour tout exporter d'un coup :

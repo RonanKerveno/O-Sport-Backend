@@ -11,7 +11,7 @@ router.post('/', eventsController.newEvent)
 //met à jour les informations de l’événement ciblé par l’ID
 router.patch(':id', eventsController.updateEvent)
 //supprime un événement ciblé par l’ID.
-router.delete(':id', eventsController.Event)
+router.delete(':id', eventsController.deleteEvent)
 
 
 module.exports = router;

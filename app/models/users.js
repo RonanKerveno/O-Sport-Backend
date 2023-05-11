@@ -11,8 +11,8 @@ Users.init({
     last_name : { type: DataTypes.STRING, allowNull: false},
     first_name : { type: DataTypes.STRING, allowNull: false},
     description: { type: DataTypes.STRING },
-    created_at : { type: DataTypes.TIMESTAMPTZ, allowNull: false},
-    updated_at : { type: DataTypes.TIMESTAMPTZ }, 
+    created_at : { type: DataTypes.DATE, allowNull: false},
+    updated_at : { type: DataTypes.DATE }, 
   
   
   },{
