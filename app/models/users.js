@@ -11,14 +11,9 @@ Users.init({
   last_name: { type: DataTypes.STRING, allowNull: false },
   first_name: { type: DataTypes.STRING, allowNull: false },
   description: { type: DataTypes.STRING },
-  created_at: { type: DataTypes.DATE, allowNull: false },
-  updated_at: { type: DataTypes.DATE },
-
 }, {
-  sequelize, // on mentionne la connexion à la BDD
+  sequelize,
   tableName: 'users',
-
 });
 
-// on exporte la class directement !
 module.exports = Users;

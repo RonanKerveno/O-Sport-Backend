@@ -4,7 +4,6 @@ const sequelize = require('../utils/db');
 class Events extends Model {}
 
 Events.init({
-  author: { type: DataTypes.STRING, allowNull: false },
   title: { type: DataTypes.STRING, allowNull: false },
   region: { type: DataTypes.STRING, allowNull: false },
   department: { type: DataTypes.STRING, allowNull: false },
@@ -13,14 +12,9 @@ Events.init({
   description: { type: DataTypes.STRING },
   starting_time: { type: DataTypes.DATE, allowNull: false },
   ending_time: { type: DataTypes.DATE, allowNull: false },
-  created_at: { type: DataTypes.DATE, allowNull: false },
-  updated_at: { type: DataTypes.DATE },
-
 }, {
-  sequelize, // on mentionne la connexion à la BDD
+  sequelize,
   tableName: 'events',
-
 });
 
-// on exporte la class directement !
 module.exports = Events;

@@ -3,15 +3,25 @@
 /* eslint-disable no-unused-vars */
 const bcrypt = require('bcrypt');
 const emailValidator = require('email-validator');
-const { Users } = require('../models');
-
-console.log('youhouuuuuuu');
+const { Users, Events, Sports } = require('../models');
 
 const userCtrl = {
-  
-  getAllUsers: async function (req, res) {
+
+  getAllUsers: async (req, res) => {
     try {
-      const users = await Users.findAll();
+      const users = await Users.findAll({
+        include: [
+          {
+            model: Events,
+            as: 'created_events',
+            include: { model: Sports, as: 'sport' },
+          },
+          {
+            model: Sports,
+            as: 'favorite_sport',
+          },
+        ],
+      });
       res.json(users);
     } catch (error) {
       console.trace(error);
@@ -109,7 +119,7 @@ const userCtrl = {
     }
   },
 
-  addOneUserToOneEvent: async function(req, res) {
+  addOneUserToOneEvent: async function (req, res) {
     try {
 
     } catch (error) {
