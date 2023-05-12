@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable no-sequences */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
@@ -7,12 +8,13 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const routes = require('./app/routers');
+const logger = require('./app/utils/logger');
 
 // const userMiddleware = require('./app/middleware/user');
 // const adminMiddleware = require('./app/middleware/user');
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5500;
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -37,5 +39,5 @@ app.use(express.static(path.join(__dirname, './public')));
 routes(app);
 
 app.listen(port, () => {
-  console.log(`http://localhost:${port}`);
+  logger.log(`http://localhost:${port}`);
 });

@@ -1,8 +1,9 @@
 const router = require('express').Router();
 const userCtrl = require('../controllers/user');
+console.log('youhouuuuuuu2');
 
 // récupère tous les utilisateurs.
-router.get('/', userCtrl.exemple);
+router.get('/', userCtrl.getAllUsers);
 // récupère l’utilisateur ciblé par l’ID.
 router.get('/:id', userCtrl.getOneUser);
 // crée un nouvel utilisateur.
