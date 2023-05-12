@@ -8,8 +8,8 @@ const Users = require('./users');
 Users.belongsToMany(Events, {
   as: 'events',
   through: 'users_join_events',
-  foreignKey: 'event_id',
-  otherKey: 'user_id',
+  foreignKey: 'user_id',
+  otherKey: 'event_id',
 });
 
 // Un évènement peut avoir plusieurs participants
@@ -36,8 +36,8 @@ Events.belongsTo(Users, {
 Users.belongsToMany(Sports, {
   as: 'favorite_sport',
   through: 'users_like_sports',
-  foreignKey: 'sport_id',
-  otherKey: 'user_id',
+  foreignKey: 'user_id',
+  otherKey: 'sport_id',
 });
 
 // Un sport peut faire parti des favoris de plusieurs utilisateurs
