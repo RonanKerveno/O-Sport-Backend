@@ -1,21 +1,26 @@
 /* eslint-disable no-unused-vars */
 const { Users } = require('../models');
 
-console.log("bla");
+console.log('bla3');
 
-const usersController = {
+const userCtrl = {
 
-  async getAllUsers(_,res) {
-    console.log("bla2");
+  async exemple(req, res) {
+  
+    res.end('todo1');
+  },
+  
+  async getAllUsers(req, res) {
+    console.log('bla2');
     try {
       const result = await Users.findAll();
       console.log(result);
     } catch (error) {
       console.log(error);
     }
-  }
+  },
 
-/*
+
   async getOneUser(req, res) {
     const { id } = req.params;
 
@@ -29,7 +34,7 @@ const usersController = {
 
   async createOneUser(req, res) {
     try {
-
+      
     } catch (error) {
 
     }
@@ -98,7 +103,6 @@ const usersController = {
 
     }
   },
-  */
 };
-console.log("bla3");
-module.exports = usersController;
+
+module.exports = userCtrl;

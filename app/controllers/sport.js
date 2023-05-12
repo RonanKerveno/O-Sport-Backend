@@ -1,22 +1,26 @@
-const { Events } = require('../models');
+const { Sports } = require('../models');
 
-const eventsController = {
+const sportCtrl = {
 
-    async getAllEvents(req, res) {
+    async getAllSports(req, res) {
 
         try{
-            const result = await Events.findAll ();
+            const result = await Sports.findAll ();
             console.log(JSON.stringify(result, null, 2));
         } catch(error) {
             console.log(error);
         }
     },
 
-    async getOneEvent(req, res) {
+    async exemple(req, res) {
+        res.end('todo1');
+      },
+
+    async getOneSport(req, res) {
         const id = req.params.id;
 
         try{
-            const response = await Events.findByPk(id);
+            const response = await Sports.findByPk(id);
             console.log(response);
         } catch(error) {
             console.log(error);
@@ -24,7 +28,7 @@ const eventsController = {
 
     },
 
-    async newEvent(req, res) {
+    async createOneSport(req, res) {
         try {
           
         } catch (error) {
@@ -32,7 +36,7 @@ const eventsController = {
         }
     },
 
-    async updateEvent(req, res) {
+    async updateOneSport(req, res) {
         try {
           
         } catch (error) {
@@ -48,8 +52,10 @@ const eventsController = {
         }
     },
 
+
+
 }
 
 
 
-module.exports = eventsController;
+module.exports = sportCtrl;
