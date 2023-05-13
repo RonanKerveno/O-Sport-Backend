@@ -7,19 +7,7 @@ const userCtrl = {
   getAllUsers: async (req, res) => {
     try {
       // SELECT * FROM users;
-      const users = await Users.findAll({
-        include: [
-          {
-            model: Events,
-            as: 'created_events',
-            include: { model: Sports, as: 'sport' },
-          },
-          {
-            model: Sports,
-            as: 'favorite_sport',
-          },
-        ],
-      });
+      const users = await Users.findAll();
       res.json(users);
     } catch (error) {
       res.status(500).json(error);
@@ -27,22 +15,12 @@ const userCtrl = {
   },
 
   getOneUser: async (req, res) => {
-    const { id } = req.params;
+    const userId = req.params.id;
+
     try {
       // SELECT * FROM users WHERE id = $1;
-      const user = await Users.findByPk(id, {
-        include: [
-          {
-            model: Events,
-            as: 'created_events',
-            include: { model: Sports, as: 'sport' },
-          },
-          {
-            model: Sports,
-            as: 'favorite_sport',
-          },
-        ],
-      });
+      const user = await Users.findByPk(userId);
+
       if (!user) {
         res.status(404).json('User not found');
       } else {
@@ -54,20 +32,18 @@ const userCtrl = {
   },
 
   createOneUser: async (req, res) => {
-    console.log('body1', req.body);
     try {
       const {
-        firstname,
-        lastname,
+        firstName,
+        lastName,
         userName,
         email,
         password,
         passwordConfirm,
         region,
-        zipcode,
+        zipCode,
         city,
         street,
-        favoriteSports,
       } = req.body;
 
       console.log('body2', req.body);
@@ -82,11 +58,11 @@ const userCtrl = {
         bodyErrors.push('Le mot de passe ne correspond pas');
       }
 
-      if (!firstname) {
+      if (!firstName) {
         bodyErrors.push('Le prénom ne peut pas être vide');
       }
 
-      if (!lastname) {
+      if (!lastName) {
         bodyErrors.push('Le nom de famille ne peut pas être vide');
       }
 
@@ -98,11 +74,11 @@ const userCtrl = {
         bodyErrors.push('La région ne peut pas être vide');
       }
 
-      if (Number.isNaN(zipcode)) {
+      if (Number.isNaN(zipCode)) {
         bodyErrors.push('Le code postal doit être un nombre');
       }
 
-      if (!zipcode) {
+      if (!zipCode) {
         bodyErrors.push('Le code postal ne peut pas être vide');
       }
 
@@ -137,14 +113,14 @@ const userCtrl = {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       await Users.create({
-        firstname,
-        lastname,
+        firstName,
+        lastName,
         userName,
         isAdmin: false,
         email,
         password: hashedPassword,
         region,
-        zipcode,
+        zipCode,
         city,
         street,
       });
@@ -158,42 +134,79 @@ const userCtrl = {
     }
   },
 
-  async updateOneUser(req, res) {
+  updateOneUser: async (req, res) => {
     try {
-      const UserId = req.params.id;
-      const user = await Users.findByPk(UserId);
+      const userId = req.params.id;
+      const user = await Users.findByPk(userId);
+
       if (!user) {
         res.status(404).send(`Can't find user with id ${userId}`);
       } else {
         const {
-          firstname, lastname, userName, email, password, region, zipcode, city, street,
+          firstName,
+          lastName,
+          userName,
+          email,
+          password,
+          region,
+          zipCode,
+          city,
+          street,
         } = req.body;
-        if (firstname, lastname, userName, email, password, region, zipcode, city, street) {
-          Users.firstname = firstname;
-        }
-        await Users.save();
-        res.json(Users);
+
+        if (firstName) user.firstName = firstName;
+        if (lastName) user.lastName = lastName;
+        if (userName) user.userName = userName;
+        if (email) user.email = email;
+        if (password) user.password = await bcrypt.hash(password, 10);
+        if (region) user.region = region;
+        if (zipCode) user.zipCode = zipCode;
+        if (city) user.city = city;
+        if (street) user.street = street;
+
+        await user.save();
+        res.json(user);
       }
     } catch (error) {
-
+      console.log(error);
+      res.status(500).json({ error: error.message });
     }
   },
 
-  async deleteOneUser(req, res) {
+  deleteOneUser: async (req, res) => {
     try {
+      const userId = req.params.id;
+      const user = await Users.findByPk(userId);
 
+      if (!user) {
+        res.status(404).send(`Can't find user with id ${userId}`);
+      } else {
+        await user.destroy();
+        res.json({ message: `User with id ${userId} has been deleted` });
+      }
     } catch (error) {
-
+      console.log(error);
+      res.status(500).json({ error: error.message });
     }
   },
 
-  async getAllEventsFromOneUser(req, res) {
+  getAllEventsFromOneUser: async (req, res) => {
     try {
+      const userId = req.params.id;
 
+      // Recherche des événements créés par l'utilisateur
+      const events = await Events.findAll({
+        where: {
+          creator_id: userId,
+        },
+      });
+
+      res.json(events);
     } catch (error) {
-
+      res.status(500).json(error);
     }
   },
+  
 
   async addOneUserToOneEvent(req, res) {
     try {
@@ -211,11 +224,30 @@ const userCtrl = {
     }
   },
 
-  async getAllSportsFromOneUser(req, res) {
+  getAllSportsFromOneUser: async (req, res) => {
+    const userId = req.params.id;
+
     try {
+      // SELECT s.* FROM users_like_sports AS uls
+      // INNER JOIN sports AS s ON uls.sport_id = s.id
+      // WHERE uls.user_id = $1;
+      const user = await Users.findByPk(userId, {
+        include: [
+          {
+            model: Sports,
+            as: 'favoriteSports',
+          },
+        ],
+      });
 
+      if (!user) {
+        res.status(404).json('User not found');
+      } else {
+        const sports = user.favoriteSports;
+        res.json(sports);
+      }
     } catch (error) {
-
+      res.status(500).json(error);
     }
   },
 
