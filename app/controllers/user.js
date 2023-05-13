@@ -1,8 +1,5 @@
-/* eslint-disable object-shorthand */
-/* eslint-disable camelcase */
-/* eslint-disable no-unused-vars */
-const bcrypt = require('bcrypt');
-const emailValidator = require('email-validator');
+// const bcrypt = require('bcrypt');
+// const emailValidator = require('email-validator');
 const { Users, Events, Sports } = require('../models');
 
 const userCtrl = {
@@ -24,31 +21,41 @@ const userCtrl = {
       });
       res.json(users);
     } catch (error) {
-      console.trace(error);
-      res.status(500).json(error.toString());
+      res.status(500).json(error);
     }
   },
 
-  exemple: (req, res) => {
-    res.end('todo1');
-  },
-
-  getOneUser: async function (req, res) {
+  getOneUser: async (req, res) => {
     const { id } = req.params;
-
     try {
-      const response = await Users.findByPk(id);
-      console.log(response);
+      const user = await Users.findByPk(id, {
+        include: [
+          {
+            model: Events,
+            as: 'created_events',
+            include: { model: Sports, as: 'sport' },
+          },
+          {
+            model: Sports,
+            as: 'favorite_sport',
+          },
+        ],
+      });
+      if (!user) {
+        res.status(404).json('User not found');
+      } else {
+        res.json(user);
+      }
     } catch (error) {
-      console.log(error);
+      res.status(500).json(error);
     }
   },
 
   // eslint-disable-next-line func-names
-  createOneUser: async function (req, res) {
+  async createOneUser(req, res) {
     try {
       const {
-        firstname, lastname, user_name, email, password
+        firstname, lastname, user_name, email, password,
       } = req.body;
       const bodyErrors = [];
       if (!firstname) {
@@ -72,7 +79,7 @@ const userCtrl = {
         res.status(400).json(bodyErrors);
       } else {
         const newUser = Users.build({
-          firstname, lastname, user_name, email, password
+          firstname, lastname, user_name, email, password,
         });
         await newUser.save();
         res.json(newUser);
@@ -83,17 +90,18 @@ const userCtrl = {
     }
   },
 
-  updateOneUser: async function (req, res) {
+  async updateOneUser(req, res) {
     try {
       const UserId = req.params.id;
       const user = await Users.findByPk(UserId);
       if (!user) {
-        res.status(404).send("Cant find user with id " + userId);
+        res.status(404).send(`Cant find user with id ${userId}`);
       } else {
-        const { firstname, lastname, user_name, email, password } = req.body;
+        const {
+          firstname, lastname, user_name, email, password,
+        } = req.body;
         if (firstname, lastname, user_name, email, password) {
           Users.firstname = fistname;
-
         }
         await task.save();
         res.json(task);
@@ -103,7 +111,7 @@ const userCtrl = {
     }
   },
 
-  deleteOneUser: async function (req, res) {
+  async deleteOneUser(req, res) {
     try {
 
     } catch (error) {
@@ -111,7 +119,7 @@ const userCtrl = {
     }
   },
 
-  getAllEventsFromOneUser: async function (req, res) {
+  async getAllEventsFromOneUser(req, res) {
     try {
 
     } catch (error) {
@@ -119,7 +127,7 @@ const userCtrl = {
     }
   },
 
-  addOneUserToOneEvent: async function (req, res) {
+  async addOneUserToOneEvent(req, res) {
     try {
 
     } catch (error) {
@@ -127,7 +135,7 @@ const userCtrl = {
     }
   },
 
-  deleteOneUserFromOneEvent: async function (req, res) {
+  async deleteOneUserFromOneEvent(req, res) {
     try {
 
     } catch (error) {
