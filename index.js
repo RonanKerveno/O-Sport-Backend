@@ -17,6 +17,7 @@ const app = express();
 const port = process.env.PORT || 5500;
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // On initialise la SESSION si elle n'est pas déjà initialisée
 app.use(session({

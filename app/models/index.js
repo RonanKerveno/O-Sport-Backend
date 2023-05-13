@@ -20,7 +20,7 @@ Events.belongsToMany(Users, {
 
 Users.hasMany(Events, {
   as: 'created_events',
-  foreignKey: 'id',
+  foreignKey: 'creator_id',
 });
 
 Events.belongsTo(Users, {

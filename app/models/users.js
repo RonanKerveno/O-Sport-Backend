@@ -4,12 +4,27 @@ const sequelize = require('../utils/db');
 class Users extends Model {}
 
 Users.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   email: { type: DataTypes.STRING(127), allowNull: false },
-  is_admin: { type: DataTypes.BOOLEAN, allowNull: false },
-  user_name: { type: DataTypes.STRING(32), allowNull: false },
+  isAdmin: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    // Mappage isAdmin/is_admin.
+    field: 'is_admin',
+  },
+  userName: {
+    type: DataTypes.STRING(32),
+    allowNull: false,
+    // Mappage userName/user_name.
+    field: 'user_name',
+  },
   password: { type: DataTypes.STRING(64), allowNull: false },
-  last_name: { type: DataTypes.STRING(32), allowNull: false },
-  first_name: { type: DataTypes.STRING(32), allowNull: false },
+  lastname: { type: DataTypes.STRING(32), allowNull: false },
+  firstname: { type: DataTypes.STRING(32), allowNull: false },
   region: { type: DataTypes.STRING(32), allowNull: false },
   zipcode: { type: DataTypes.STRING(32), allowNull: false },
   city: { type: DataTypes.STRING(64), allowNull: false },

@@ -1,11 +1,12 @@
-// const bcrypt = require('bcrypt');
-// const emailValidator = require('email-validator');
+const bcrypt = require('bcrypt');
+const emailValidator = require('email-validator');
 const { Users, Events, Sports } = require('../models');
 
 const userCtrl = {
 
   getAllUsers: async (req, res) => {
     try {
+      // SELECT * FROM users;
       const users = await Users.findAll({
         include: [
           {
@@ -28,6 +29,7 @@ const userCtrl = {
   getOneUser: async (req, res) => {
     const { id } = req.params;
     try {
+      // SELECT * FROM users WHERE id = $1;
       const user = await Users.findByPk(id, {
         include: [
           {
@@ -51,42 +53,108 @@ const userCtrl = {
     }
   },
 
-  // eslint-disable-next-line func-names
-  async createOneUser(req, res) {
+  createOneUser: async (req, res) => {
+    console.log('body1', req.body);
     try {
       const {
-        firstname, lastname, user_name, email, password,
+        firstname,
+        lastname,
+        userName,
+        email,
+        password,
+        passwordConfirm,
+        region,
+        zipcode,
+        city,
+        street,
+        favoriteSports,
       } = req.body;
+
+      console.log('body2', req.body);
+
       const bodyErrors = [];
-      if (!firstname) {
-        bodyErrors.push('firstname can not be empty');
-      }
-      if (!lastname) {
-        bodyErrors.push('lastname can not be empty');
-      }
-      if (!user_name) {
-        bodyErrors.push('user_name can not be empty');
-      }
-      if (!email) {
-        bodyErrors.push('email can not be empty');
-      }
-      if (!password) {
-        bodyErrors.push('password can not be empty');
+
+      if (!emailValidator.validate(email)) {
+        bodyErrors.push('Email invalide');
       }
 
-      if (bodyErrors.length) {
-        // si on a une erreur
-        res.status(400).json(bodyErrors);
-      } else {
-        const newUser = Users.build({
-          firstname, lastname, user_name, email, password,
-        });
-        await newUser.save();
-        res.json(newUser);
+      if (password !== passwordConfirm) {
+        bodyErrors.push('Le mot de passe ne correspond pas');
       }
+
+      if (!firstname) {
+        bodyErrors.push('Le prénom ne peut pas être vide');
+      }
+
+      if (!lastname) {
+        bodyErrors.push('Le nom de famille ne peut pas être vide');
+      }
+
+      if (!userName) {
+        bodyErrors.push("Le nom d'utilisateur ne peut pas être vide");
+      }
+
+      if (!region) {
+        bodyErrors.push('La région ne peut pas être vide');
+      }
+
+      if (Number.isNaN(zipcode)) {
+        bodyErrors.push('Le code postal doit être un nombre');
+      }
+
+      if (!zipcode) {
+        bodyErrors.push('Le code postal ne peut pas être vide');
+      }
+
+      if (!city) {
+        bodyErrors.push('La ville ne peut pas être vide');
+      }
+
+      if (!street) {
+        bodyErrors.push('La rue ne peut pas être vide');
+      }
+
+      if (bodyErrors.length > 0) {
+        res.json({
+          error: bodyErrors.join(', '),
+        });
+        return;
+      }
+
+      const checkUser = await Users.findOne({
+        where: {
+          email,
+        },
+      });
+
+      if (checkUser) {
+        res.json({
+          error: 'Email déjà utilisé',
+        });
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await Users.create({
+        firstname,
+        lastname,
+        userName,
+        isAdmin: false,
+        email,
+        password: hashedPassword,
+        region,
+        zipcode,
+        city,
+        street,
+      });
+
+      res.json({
+        message: 'Vous pouvez maintenant vous connecter !',
+      });
     } catch (error) {
-      console.trace(error);
-      res.status(500).json(error.toString());
+      console.log(error);
+      res.json({ error: error.message });
     }
   },
 
@@ -95,16 +163,16 @@ const userCtrl = {
       const UserId = req.params.id;
       const user = await Users.findByPk(UserId);
       if (!user) {
-        res.status(404).send(`Cant find user with id ${userId}`);
+        res.status(404).send(`Can't find user with id ${userId}`);
       } else {
         const {
-          firstname, lastname, user_name, email, password,
+          firstname, lastname, userName, email, password, region, zipcode, city, street,
         } = req.body;
-        if (firstname, lastname, user_name, email, password) {
-          Users.firstname = fistname;
+        if (firstname, lastname, userName, email, password, region, zipcode, city, street) {
+          Users.firstname = firstname;
         }
-        await task.save();
-        res.json(task);
+        await Users.save();
+        res.json(Users);
       }
     } catch (error) {
 

@@ -1,6 +1,6 @@
 BEGIN;
 
-INSERT INTO "users" ("id", "email", "is_admin", "user_name", "password", "last_name", "first_name", "region", "zipcode", "city", "street", "description")
+INSERT INTO "users" ("id", "email", "is_admin", "user_name", "password", "lastname", "firstname", "region", "zipcode", "city", "street", "description")
 VALUES
     (1, 'brice.joe@gmail.com', FALSE, 'bricejoe', 'bricejoe', 'Joe', 'Brice', 'Île-de-France', '75008', 'Paris', '12 rue de l''Élysée', 'Hello tout le monde! Je suis un bon-vivant sportif aimant particulièrement les randonnées.. Au plaisir de vous rencontrer'),
     (2, 'jean.dumas@hotmail.com', FALSE, 'jeandum', 'jeandum', 'Dumas', 'Jean', 'Occitanie', '66000', 'Perpignan', '15 boulevard des Pyrénées', 'Salut! Je suis un grand fan de tennis et j''aime participer à des événements sportifs.');
