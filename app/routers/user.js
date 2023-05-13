@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const userCtrl = require('../controllers/user');
-console.log('youhouuuuuuu2');
 
 // récupère tous les utilisateurs.
 router.get('/', userCtrl.getAllUsers);
