@@ -1,0 +1,5 @@
+Users (id, email, is_admin, user_name, password, lastname, firstname, region, zipcode, city, street, description)
+Events (id, #creator_id, #sport_id, title, region, zipcode, city, street, description, starting_time, ending_time)
+users_join_events (#event_id, #user_id)
+Sports (id, name)
+users_like_sports (#user_id, #sport_id)
