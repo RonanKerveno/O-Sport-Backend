@@ -1,10 +1,11 @@
 BEGIN;
 
+--Mots de passe = username--
 INSERT INTO "users" ("id", "email", "is_admin", "user_name", "password", "last_name", "first_name", "region", "zip_code", "city", "street", "description")
 VALUES
-    (1, 'brice.joe@gmail.com', FALSE, 'bricejoe', 'bricejoe', 'Joe', 'Brice', 'Île-de-France', '75008', 'Paris', '12 rue de l''Élysée', 'Hello tout le monde! Je suis un bon-vivant sportif aimant particulièrement les randonnées.. Au plaisir de vous rencontrer'),
-    (2, 'jean.dumas@hotmail.com', FALSE, 'jeandum', 'jeandum', 'Dumas', 'Jean', 'Occitanie', '66000', 'Perpignan', '15 boulevard des Pyrénées', 'Salut! Je suis un grand fan de tennis et j''aime participer à des événements sportifs.'),
-    (3, 'admin@admin.com', TRUE, 'admin', 'admin', 'lefort', 'Emilie', 'Occitanie', '68000', 'Colmar', '15 boulevard de Strasbourg', 'Salut! Je suis votre admin préférée !! En bref la loi c''est moi mais je suis plutôt cool et grande fan de sport!');
+    (1, 'brice.joe@gmail.com', FALSE, 'bricejoe', '$2b$10$rJygkv/lmkrDVlzOB2xSCevagOfuG8CSeXQVGuUokn4EiThyEMSOa', 'Joe', 'Brice', 'Île-de-France', '75008', 'Paris', '12 rue de l''Élysée', 'Hello tout le monde! Je suis un bon-vivant sportif aimant particulièrement les randonnées.. Au plaisir de vous rencontrer'),
+    (2, 'jean.dumas@hotmail.com', FALSE, 'jeandum', '$2b$10$2Vk6vOQlYyfZGkPALmND6OOupjGReaCdsnMqnPf35xgrGlGwoCl2W', 'Dumas', 'Jean', 'Occitanie', '66000', 'Perpignan', '15 boulevard des Pyrénées', 'Salut! Je suis un grand fan de tennis et j''aime participer à des événements sportifs.'),
+    (3, 'admin@admin.com', TRUE, 'admin', '$2b$10$T2Re39qvr7NUZPWJm2ByieunQrV4DVBk4VVPgC6OsKpi/BVsVKktO', 'lefort', 'Emilie', 'Occitanie', '68000', 'Colmar', '15 boulevard de Strasbourg', 'Salut! Je suis votre admin préférée !! En bref la loi c''est moi mais je suis plutôt cool et grande fan de sport!');
     
 INSERT INTO "sports" ("id", "name")
 VALUES 

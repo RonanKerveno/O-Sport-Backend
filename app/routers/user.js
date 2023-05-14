@@ -1,6 +1,9 @@
 const router = require('express').Router();
 const userCtrl = require('../controllers/user');
+const authCtrl = require('../controllers/authentification');
 
+// connexion utilisateur
+router.post('/login', authCtrl.login);
 // récupère tous les utilisateurs.
 router.get('/', userCtrl.getAllUsers);
 // récupère l’utilisateur ciblé par l’ID.
