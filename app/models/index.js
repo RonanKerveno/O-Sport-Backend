@@ -3,55 +3,55 @@ const Sports = require('./sports');
 const Users = require('./users');
 
 Users.belongsToMany(Events, {
-  as: 'events',
+  as: 'userEvents',
   through: 'users_join_events',
-  foreignKey: 'user_id',
-  otherKey: 'event_id',
+  foreignKey: 'userId',
+  otherKey: 'eventId',
   timestamps: false,
 });
 
 Events.belongsToMany(Users, {
-  as: 'users',
+  as: 'eventUsers',
   through: 'users_join_events',
-  foreignKey: 'event_id',
-  otherKey: 'user_id',
+  foreignKey: 'eventId',
+  otherKey: 'userId',
   timestamps: false,
 });
 
 Users.hasMany(Events, {
-  as: 'created_events',
-  foreignKey: 'creator_id',
+  as: 'createdEvents',
+  foreignKey: 'creatorId',
 });
 
 Events.belongsTo(Users, {
   as: 'creator',
-  foreignKey: 'creator_id',
+  foreignKey: 'creatorId',
 });
 
 Users.belongsToMany(Sports, {
-  as: 'favorite_sport',
+  as: 'favoriteSports',
   through: 'users_like_sports',
-  foreignKey: 'user_id',
-  otherKey: 'sport_id',
+  foreignKey: 'userId',
+  otherKey: 'sportId',
   timestamps: false,
 });
 
 Sports.belongsToMany(Users, {
-  as: 'sports_fan',
+  as: 'sportFans',
   through: 'users_like_sports',
-  foreignKey: 'sport_id',
-  otherKey: 'user_id',
+  foreignKey: 'sportId',
+  otherKey: 'userId',
   timestamps: false,
 });
 
 Events.belongsTo(Sports, {
   as: 'sport',
-  foreignKey: 'sport_id',
+  foreignKey: 'sportId',
 });
 
 Sports.hasMany(Events, {
-  as: 'sport_events',
-  foreignKey: 'sport_id',
+  as: 'sportEvents',
+  foreignKey: 'sportId',
 });
 
 module.exports = { Users, Events, Sports };

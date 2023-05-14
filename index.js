@@ -16,7 +16,7 @@ const logger = require('./app/utils/logger');
 const app = express();
 const port = process.env.PORT || 5500;
 
-app.use(express.urlencoded({ extended: true }));
+// Middleware pour parser les body request en JSON
 app.use(express.json());
 
 // On initialise la SESSION si elle n'est pas déjà initialisée
