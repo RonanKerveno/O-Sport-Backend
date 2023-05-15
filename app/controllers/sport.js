@@ -31,7 +31,7 @@ const sportCtrl = {
 
   createOneSport: async (req, res) => {
     try {
-      const name = req.body;
+      const { name } = req.body;
       const bodyErrors = [];
       if (!name) {
         bodyErrors.push('Le nom du sport ne peut pas être vide');
@@ -52,7 +52,7 @@ const sportCtrl = {
         });
         return;
       }
-      await Sports.create(name);
+      await Sports.create({ name });
       res.json({
         message: 'Le nouveau sport a bien été créé',
       });
@@ -70,9 +70,9 @@ const sportCtrl = {
       if (!sport) {
         res.status(404).send(`Can't find sport with id ${sportId}`);
       } else {
-        const name = req.body;
+        const { name } = req.body;
 
-        if (name) sport.name = name;
+        if ({ name }) sport.name = name;
 
         // Sauvegarde des champs dans la BDD.
         await sport.save();

@@ -50,22 +50,19 @@ const eventCtrl = {
         bodyErrors.push('La région ne peut pas être vide');
       }
       if (!zipCode) {
-        bodyErrors.push('La région ne peut pas être vide');
+        bodyErrors.push('Le code postal ne peut pas être vide');
       }
       if (!city) {
-        bodyErrors.push('La région ne peut pas être vide');
+        bodyErrors.push('La ville ne peut pas être vide');
       }
       if (!street) {
-        bodyErrors.push('La région ne peut pas être vide');
-      }
-      if (!description) {
-        bodyErrors.push('La région ne peut pas être vide');
+        bodyErrors.push('La rue ne peut pas être vide');
       }
       if (!startingTime) {
-        bodyErrors.push('La région ne peut pas être vide');
+        bodyErrors.push('La date-heure de début ne peut pas être vide');
       }
       if (!endingTime) {
-        bodyErrors.push('La région ne peut pas être vide');
+        bodyErrors.push('La date-heure de fin ne peut pas être vide');
       }
 
       if (bodyErrors.length > 0) {
