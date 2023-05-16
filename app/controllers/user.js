@@ -57,31 +57,27 @@ const userCtrl = {
   getOneUserPrivate: async (req, res) => {
     const userId = req.params.id;
 
-    // Vérifie que l'utilisateur demandant les informations est l'utilisateur concerné
-    if ((req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
-      try {
-      // SELECT * FROM users WHERE id = $1;
-        const user = await Users.findByPk(userId);
+    try {
+    // SELECT * FROM users WHERE id = $1;
+      const user = await Users.findByPk(userId);
 
-        if (!user) {
-          res.status(404).json('User not found');
-        } else {
-        // On filtre pour n'afficher que les informations privées
-          const privateUserInfo = {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            firstname: user.firstname,
-            lastname: user.lastname,
-            password: user.password,
-          };
-          res.json(privateUserInfo);
-        }
-      } catch (error) {
-        res.status(500).json(error);
+      if (!user) {
+        return res.status(404).json('User not found');
       }
-    } else {
-      res.status(403).json('Forbidden: you do not have access to this information.');
+
+      // On filtre pour n'afficher que les informations privées
+      const privateUserInfo = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        password: user.password,
+      };
+
+      return res.json(privateUserInfo);
+    } catch (error) {
+      return res.status(500).json(error);
     }
   },
 
@@ -189,11 +185,6 @@ const userCtrl = {
       const userId = req.params.id;
       const user = await Users.findByPk(userId);
 
-      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
-      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
-        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
-      }
-
       if (!user) {
         return res.status(404).send(`Can't find user with id ${userId}`);
       }
@@ -233,11 +224,6 @@ const userCtrl = {
     try {
       const userId = req.params.id;
       const user = await Users.findByPk(userId);
-
-      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
-      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
-        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
-      }
 
       if (!user) {
         return res.status(404).send(`Can't find user with id ${userId}`);
@@ -306,11 +292,6 @@ const userCtrl = {
       const user = await Users.findByPk(userId);
       const event = await Events.findByPk(eventId);
 
-      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
-      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
-        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
-      }
-
       if (!user || !event) {
         return res.status(404).json({ error: 'User or Event not found' });
       }
@@ -334,11 +315,6 @@ const userCtrl = {
 
       const user = await Users.findByPk(userId);
       const event = await Events.findByPk(eventId);
-
-      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
-      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
-        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
-      }
 
       if (!user || !event) {
         return res.status(404).json({ error: 'User or Event not found' });
@@ -388,11 +364,6 @@ const userCtrl = {
       const user = await Users.findByPk(userId);
       const sport = await Sports.findByPk(sportId);
 
-      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
-      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
-        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
-      }
-
       if (!user || !sport) {
         return res.status(404).json({ error: 'User or Sport not found' });
       }
@@ -416,11 +387,6 @@ const userCtrl = {
 
       const user = await Users.findByPk(userId);
       const sport = await Sports.findByPk(sportId);
-
-      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
-      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
-        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
-      }
 
       if (!user || !sport) {
         return res.status(404).json({ error: 'User or Sport not found' });
