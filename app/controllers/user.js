@@ -9,7 +9,18 @@ const userCtrl = {
     try {
       // SELECT * FROM users;
       const users = await Users.findAll();
-      res.json(users);
+
+      // On filtre pour n'afficher que les informations publiques
+      const publicUsersInfo = users.map((user) => ({
+        id: user.id,
+        isAdmin: user.isAdmin,
+        userName: user.userName,
+        region: user.region,
+        city: user.city,
+        description: user.description,
+      }));
+
+      res.json(publicUsersInfo);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -30,7 +41,7 @@ const userCtrl = {
         const publicUserInfo = {
           id: user.id,
           isAdmin: user.isAdmin,
-          username: user.username,
+          userName: user.userName,
           region: user.region,
           city: user.city,
           description: user.description,
@@ -47,7 +58,7 @@ const userCtrl = {
     const userId = req.params.id;
 
     // Vérifie que l'utilisateur demandant les informations est l'utilisateur concerné
-    if (req.user && req.user.id === userId) {
+    if ((req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
       try {
       // SELECT * FROM users WHERE id = $1;
         const user = await Users.findByPk(userId);
@@ -223,6 +234,11 @@ const userCtrl = {
       const userId = req.params.id;
       const user = await Users.findByPk(userId);
 
+      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
+      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
+        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
+      }
+
       if (!user) {
         return res.status(404).send(`Can't find user with id ${userId}`);
       }
@@ -290,6 +306,11 @@ const userCtrl = {
       const user = await Users.findByPk(userId);
       const event = await Events.findByPk(eventId);
 
+      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
+      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
+        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
+      }
+
       if (!user || !event) {
         return res.status(404).json({ error: 'User or Event not found' });
       }
@@ -313,6 +334,11 @@ const userCtrl = {
 
       const user = await Users.findByPk(userId);
       const event = await Events.findByPk(eventId);
+
+      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
+      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
+        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
+      }
 
       if (!user || !event) {
         return res.status(404).json({ error: 'User or Event not found' });
@@ -362,6 +388,11 @@ const userCtrl = {
       const user = await Users.findByPk(userId);
       const sport = await Sports.findByPk(sportId);
 
+      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
+      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
+        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
+      }
+
       if (!user || !sport) {
         return res.status(404).json({ error: 'User or Sport not found' });
       }
@@ -385,6 +416,11 @@ const userCtrl = {
 
       const user = await Users.findByPk(userId);
       const sport = await Sports.findByPk(sportId);
+
+      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
+      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
+        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
+      }
 
       if (!user || !sport) {
         return res.status(404).json({ error: 'User or Sport not found' });
