@@ -1,4 +1,5 @@
 const { Events } = require('../models');
+const jwt = require('jsonwebtoken');
 
 const eventCtrl = {
 

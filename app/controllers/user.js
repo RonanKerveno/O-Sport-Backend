@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt');
 const emailValidator = require('email-validator');
 const { Users, Events, Sports } = require('../models');
+const logger = require('../utils/logger');
 
 const userCtrl = {
-
   // Récupère tous les utilisateurs.
   getAllUsers: async (req, res) => {
     try {
@@ -26,10 +26,51 @@ const userCtrl = {
       if (!user) {
         res.status(404).json('User not found');
       } else {
-        res.json(user);
+        // On filtre pour n'afficher que les informations publiques
+        const publicUserInfo = {
+          id: user.id,
+          isAdmin: user.isAdmin,
+          username: user.username,
+          region: user.region,
+          city: user.city,
+          description: user.description,
+        };
+        res.json(publicUserInfo);
       }
     } catch (error) {
       res.status(500).json(error);
+    }
+  },
+
+  // Récupère l’utilisateur ciblé par l’ID et ses informations privées.
+  getOneUserPrivate: async (req, res) => {
+    const userId = req.params.id;
+
+    // Vérifie que l'utilisateur demandant les informations est l'utilisateur concerné
+    if (req.user && req.user.id === userId) {
+      try {
+      // SELECT * FROM users WHERE id = $1;
+        const user = await Users.findByPk(userId);
+
+        if (!user) {
+          res.status(404).json('User not found');
+        } else {
+        // On filtre pour n'afficher que les informations privées
+          const privateUserInfo = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            password: user.password,
+          };
+          res.json(privateUserInfo);
+        }
+      } catch (error) {
+        res.status(500).json(error);
+      }
+    } else {
+      res.status(403).json('Forbidden: you do not have access to this information.');
     }
   },
 
@@ -126,7 +167,7 @@ const userCtrl = {
         message: 'Vous pouvez maintenant vous connecter !',
       });
     } catch (error) {
-      console.log(error);
+      logger.log(error);
       res.json({ error: error.message });
     }
   },
@@ -137,38 +178,42 @@ const userCtrl = {
       const userId = req.params.id;
       const user = await Users.findByPk(userId);
 
-      if (!user) {
-        res.status(404).send(`Can't find user with id ${userId}`);
-      } else {
-        const {
-          firstName,
-          lastName,
-          userName,
-          email,
-          password,
-          region,
-          zipCode,
-          city,
-          street,
-        } = req.body;
-
-        if (firstName) user.firstName = firstName;
-        if (lastName) user.lastName = lastName;
-        if (userName) user.userName = userName;
-        if (email) user.email = email;
-        if (password) user.password = await bcrypt.hash(password, 10);
-        if (region) user.region = region;
-        if (zipCode) user.zipCode = zipCode;
-        if (city) user.city = city;
-        if (street) user.street = street;
-
-        // Sauvegarde des champs dans la BDD.
-        await user.save();
-        res.json(user);
+      // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur
+      if (!(req.user && (Number(req.user.userId) === Number(userId) || req.user.isAdmin))) {
+        return res.status(403).json({ error: 'Vous n\'avez pas les droits nécessaires pour modifier ce profil.' });
       }
+
+      if (!user) {
+        return res.status(404).send(`Can't find user with id ${userId}`);
+      }
+      const {
+        firstName,
+        lastName,
+        userName,
+        email,
+        password,
+        region,
+        zipCode,
+        city,
+        street,
+      } = req.body;
+
+      if (firstName) user.firstName = firstName;
+      if (lastName) user.lastName = lastName;
+      if (userName) user.userName = userName;
+      if (email) user.email = email;
+      if (password) user.password = await bcrypt.hash(password, 10);
+      if (region) user.region = region;
+      if (zipCode) user.zipCode = zipCode;
+      if (city) user.city = city;
+      if (street) user.street = street;
+
+      // Sauvegarde des champs dans la BDD.
+      await user.save();
+      return res.json(user);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   },
 
@@ -179,14 +224,13 @@ const userCtrl = {
       const user = await Users.findByPk(userId);
 
       if (!user) {
-        res.status(404).send(`Can't find user with id ${userId}`);
-      } else {
-        await user.destroy();
-        res.json({ message: `User with id ${userId} has been deleted` });
+        return res.status(404).send(`Can't find user with id ${userId}`);
       }
+      await user.destroy();
+      return res.json({ message: `User with id ${userId} has been deleted` });
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: error.message });
+      logger.log(error);
+      return res.status(500).json({ error: error.message });
     }
   },
 
@@ -209,7 +253,7 @@ const userCtrl = {
       // On retourne la liste des événements
       return res.json(events);
     } catch (error) {
-      console.log(error);
+      logger.log(error);
       return res.status(500).json({ error: error.message });
     }
   },
@@ -233,7 +277,7 @@ const userCtrl = {
       // On retourne la liste des événements
       return res.json(events);
     } catch (error) {
-      console.log(error);
+      logger.log(error);
       return res.status(500).json({ error: error.message });
     }
   },
@@ -257,7 +301,7 @@ const userCtrl = {
 
       return res.json({ message: 'User added to the event successfully' });
     } catch (error) {
-      console.log(error);
+      logger.log(error);
       return res.status(500).json({ error: error.message });
     }
   },
@@ -281,7 +325,7 @@ const userCtrl = {
 
       return res.json({ message: 'User removed from the event successfully' });
     } catch (error) {
-      console.log(error);
+      logger.log(error);
       return res.status(500).json({ error: error.message });
     }
   },
@@ -305,7 +349,7 @@ const userCtrl = {
       // On retourne la liste des sports.
       return res.json(sports);
     } catch (error) {
-      console.log(error);
+      logger.log(error);
       return res.status(500).json({ error: error.message });
     }
   },
@@ -329,7 +373,7 @@ const userCtrl = {
 
       return res.json({ message: 'Sport added to the user\'s favorites successfully' });
     } catch (error) {
-      console.log(error);
+      logger.log(error);
       return res.status(500).json({ error: error.message });
     }
   },
@@ -353,7 +397,7 @@ const userCtrl = {
 
       return res.json({ message: 'Sport removed from the user\'s favorites successfully' });
     } catch (error) {
-      console.log(error);
+      logger.log(error);
       return res.status(500).json({ error: error.message });
     }
   },

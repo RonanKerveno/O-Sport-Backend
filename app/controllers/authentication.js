@@ -30,7 +30,7 @@ const authController = {
 
       // Identifiants OK = génération du token JWT.
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
+        { userId: user.id, email: user.email, isAdmin: user.isAdmin },
         process.env.SECRET_KEY,
         { expiresIn: '24h' },
       );

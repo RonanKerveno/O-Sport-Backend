@@ -7,8 +7,10 @@ const authenticateJWT = require('../middlewares/authentication');
 router.post('/login', authCtrl.login);
 // récupère tous les utilisateurs.
 router.get('/', userCtrl.getAllUsers);
+// router.get('/private', userCtrl.getAllUsersPrivate);
 // récupère l’utilisateur ciblé par l’ID.
 router.get('/:id', userCtrl.getOneUser);
+router.get('/:id/private', userCtrl.getOneUserPrivate);
 // crée un nouvel utilisateur.
 router.post('/', userCtrl.createOneUser);
 // met à jour les informations de l’utilisateur ciblé par l’ID.
