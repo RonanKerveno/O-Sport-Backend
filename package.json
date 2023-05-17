@@ -6,11 +6,15 @@
   "scripts": {
     "test": "jest",
     "start": "node index.js",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "resetDB": "psql -U spedata -d osport -f data/osport.structure.sql; psql -U spedata -d osport -f data/osport.data.sql;"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@apollo/server": "^4.7.1",
+    "@nic-jennings/sql-datasource": "^0.0.7",
+    "apollo-datasource-rest": "^3.7.0",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
@@ -20,6 +24,7 @@
     "express": "^4.18.2",
     "express-jsdoc-swagger": "^1.8.0",
     "express-session": "^1.17.3",
+    "graphql": "^16.6.0",
     "jsonwebtoken": "^9.0.0",
     "pg": "^8.10.0",
     "sanitizer": "^0.1.3",

@@ -1,5 +1,4 @@
 const { Sports } = require('../models');
-const jwt = require('jsonwebtoken');
 
 const sportCtrl = {
 
@@ -31,74 +30,92 @@ const sportCtrl = {
   },
 
   createOneSport: async (req, res) => {
-    try {
-      const { name } = req.body;
-      const bodyErrors = [];
-      if (!name) {
-        bodyErrors.push('Le nom du sport ne peut pas être vide');
-      }
-      if (bodyErrors.length > 0) {
-        res.json({
-          error: bodyErrors,
+    if (req.user.isAdmin) {
+      try {
+        const { name } = req.body;
+        const bodyErrors = [];
+        if (!name) {
+          bodyErrors.push('Le nom du sport ne peut pas être vide');
+        }
+        if (bodyErrors.length > 0) {
+          res.json({
+            error: bodyErrors,
+          });
+        }
+        const checkSport = await Sports.findOne({
+          where: {
+            name,
+          },
         });
-      }
-      const checkSport = await Sports.findOne({
-        where: {
-          name,
-        },
-      });
-      if (checkSport) {
+        if (checkSport) {
+          res.json({
+            error: 'Nom de sport déjà utilisé',
+          });
+          return;
+        }
+        await Sports.create({ name });
         res.json({
-          error: 'Nom de sport déjà utilisé',
+          message: 'Le nouveau sport a bien été créé',
         });
-        return;
+      } catch (error) {
+        console.log(error);
+        res.json({ error: error.message });
       }
-      await Sports.create({ name });
+    } else {
       res.json({
-        message: 'Le nouveau sport a bien été créé',
+        error: 'Vous n\'avez pas les droits',
       });
-    } catch (error) {
-      console.log(error);
-      res.json({ error: error.message });
     }
   },
 
   updateOneSport: async (req, res) => {
-    try {
-      const sportId = req.params.id;
-      const sport = await Sports.findByPk(sportId);
+    if (req.user.isAdmin) {
+      try {
+        const sportId = req.params.id;
+        const sport = await Sports.findByPk(sportId);
 
-      if (!sport) {
-        res.status(404).send(`Can't find sport with id ${sportId}`);
-      } else {
-        const { name } = req.body;
+        if (!sport) {
+          res.status(404).send(`Can't find sport with id ${sportId}`);
+        } else {
+          const { name } = req.body;
 
-        if ({ name }) sport.name = name;
+          if ({ name }) sport.name = name;
 
-        // Sauvegarde des champs dans la BDD.
-        await sport.save();
-        res.json(sport);
+          // Sauvegarde des champs dans la BDD.
+          await sport.save();
+          res.json(sport);
+        }
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
       }
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: error.message });
+    } else {
+      res.json({
+        error: 'Vous n\'avez pas les droits',
+      });
     }
   },
 
   deleteOneSport: async (req, res) => {
-    try {
-      const sportId = req.params.id;
-      const sport = await Sports.findByPk(sportId);
+    if (req.user.isAdmin) {
+      try {
+        const sportId = req.params.id;
+        const sport = await Sports.findByPk(sportId);
 
-      if (!sport) {
-        res.status(404).send(`Can't find sport with id ${sportId}`);
-      } else {
-        await sport.destroy();
-        res.json({ message: `Sport with id ${sportId} has been deleted` });
+        if (!sport) {
+          res.status(404).send(`Can't find sport with id ${sportId}`);
+        } else {
+          await sport.destroy();
+          res.json({ message: `Sport with id ${sportId} has been deleted` });
+        }
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
       }
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: error.message });
+    } else {
+      res.json({
+        error: 'Vous n\'avez pas les droits',
+      });
     }
   },
 
