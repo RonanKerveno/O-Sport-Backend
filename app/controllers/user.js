@@ -7,7 +7,8 @@ const userCtrl = {
   // Récupère tous les utilisateurs.
   getAllUsers: async (req, res) => {
     try {
-      // SELECT * FROM users;
+      // SELECT id, isAdmin, userName,dateOfBirth, gender, region, city, description FROM users;
+
       const users = await Users.findAll();
 
       // On filtre pour n'afficher que les informations publiques
@@ -15,6 +16,8 @@ const userCtrl = {
         id: user.id,
         isAdmin: user.isAdmin,
         userName: user.userName,
+        dateOfBirth: user.dateOfBirth,
+        gender: user.gender,
         region: user.region,
         city: user.city,
         description: user.description,
@@ -28,12 +31,13 @@ const userCtrl = {
 
   // Récupère l’utilisateur ciblé par l’ID.
   getOneUser: async (req, res) => {
-    const userId = req.params.id;
+    const { userId } = req.params;
 
     try {
-      // SELECT * FROM users WHERE id = $1;
+      // SELECT id, isAdmin, userName, dateOfBirth, gender, region, city,
+      // description FROM users WHERE id = $1;
+      console.log(userId);
       const user = await Users.findByPk(userId);
-
       if (!user) {
         res.status(404).json('User not found');
       } else {
@@ -42,9 +46,12 @@ const userCtrl = {
           id: user.id,
           isAdmin: user.isAdmin,
           userName: user.userName,
+          dateOfBirth: user.dateOfBirth,
+          gender: user.gender,
           region: user.region,
           city: user.city,
           description: user.description,
+          createdAt: user.createdAt,
         };
         res.json(publicUserInfo);
       }
@@ -55,10 +62,10 @@ const userCtrl = {
 
   // Récupère l’utilisateur ciblé par l’ID et ses informations privées.
   getOneUserPrivate: async (req, res) => {
-    const userId = req.params.id;
+    const { userId } = req.params;
 
     try {
-    // SELECT * FROM users WHERE id = $1;
+    // SELECT id, userName, email, firstName, lastName, password FROM users WHERE id = $1;
       const user = await Users.findByPk(userId);
 
       if (!user) {
@@ -92,6 +99,8 @@ const userCtrl = {
         email,
         password,
         passwordConfirm,
+        dateOfBirth,
+        gender,
         region,
         zipCode,
         city,
@@ -113,8 +122,14 @@ const userCtrl = {
       if (!lastName) {
         bodyErrors.push('Le nom de famille ne peut pas être vide');
       }
+      if (!dateOfBirth) {
+        bodyErrors.push('La date de naissance ne peut pas être vide');
+      }
+      if (!gender) {
+        bodyErrors.push('Le genre ne peut pas être vide');
+      }
       if (!userName) {
-        bodyErrors.push("Le nom d'utilisateur ne peut pas être vide");
+        bodyErrors.push('Le nom d\'utilisateur ne peut pas être vide');
       }
       if (!region) {
         bodyErrors.push('La région ne peut pas être vide');
@@ -156,6 +171,12 @@ const userCtrl = {
       // Encryption du mot de passe.
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      // INSERT INTO Users (firstName, lastName, userName, isAdmin,
+      // email, password, dateOfBirth, gender, region, zipCode, city, street)
+      // VALUES ('valeur_firstName', 'valeur_lastName',
+      // 'valeur_userName', false, 'valeur_email', 'valeur_password',
+      // 'valeur_dateOfBirth', 'valeur_gender',
+      // 'valeur_region', 'valeur_zipCode', 'valeur_city', 'valeur_street');
       // Création de l'utilisateur avec les champs recquis.
       await Users.create({
         firstName,
@@ -164,6 +185,8 @@ const userCtrl = {
         isAdmin: false,
         email,
         password: hashedPassword,
+        dateOfBirth,
+        gender,
         region,
         zipCode,
         city,
@@ -182,9 +205,16 @@ const userCtrl = {
   // Mise à jour des informations de l’utilisateur ciblé par l’ID.
   updateOneUser: async (req, res) => {
     try {
-      const userId = req.params.id;
+      const userId = req.params.userId;
       const user = await Users.findByPk(userId);
-
+      // UPDATE Users
+      // SET firstName = 'valeur_firstName', lastName =
+      // 'valeur_lastName', userName = 'valeur_userName', email =
+      // 'valeur_email', password = 'valeur_password', dateOfBirth =
+      // 'valeur_dateOfBirth', gender = 'valeur_gender', region =
+      // 'valeur_region', zipCode = 'valeur_zipCode', city =
+      // 'valeur_city', street = 'valeur_street'
+      // WHERE id = 'valeur_id';
       if (!user) {
         return res.status(404).send(`Can't find user with id ${userId}`);
       }
@@ -194,6 +224,8 @@ const userCtrl = {
         userName,
         email,
         password,
+        dateOfBirth,
+        gender,
         region,
         zipCode,
         city,
@@ -205,6 +237,8 @@ const userCtrl = {
       if (userName) user.userName = userName;
       if (email) user.email = email;
       if (password) user.password = await bcrypt.hash(password, 10);
+      if (dateOfBirth) user.dateOfBirth = dateOfBirth;
+      if (gender) user.gender = gender;
       if (region) user.region = region;
       if (zipCode) user.zipCode = zipCode;
       if (city) user.city = city;
@@ -222,7 +256,9 @@ const userCtrl = {
   // Supprime un utilisateur ciblé par l’ID.
   deleteOneUser: async (req, res) => {
     try {
-      const userId = req.params.id;
+      // DELETE FROM Users
+      // WHERE id = 'valeur_id';
+      const userId = req.params.userId;
       const user = await Users.findByPk(userId);
 
       if (!user) {

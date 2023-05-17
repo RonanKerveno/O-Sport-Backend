@@ -12,10 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@apollo/server": "^4.7.1",
-    "@nic-jennings/sql-datasource": "^0.0.7",
-    "apollo-datasource-rest": "^3.7.0",
-    "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "debug": "^4.3.4",

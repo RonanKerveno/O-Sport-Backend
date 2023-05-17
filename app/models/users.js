@@ -10,6 +10,8 @@ Users.init({
   password: { type: DataTypes.STRING(64), allowNull: false },
   lastName: { type: DataTypes.STRING(32), allowNull: false },
   firstName: { type: DataTypes.STRING(32), allowNull: false },
+  dateOfBirth: { type: DataTypes.DATE, allowNull: false },
+  gender: { type: DataTypes.STRING(32), allowNull: false },
   region: { type: DataTypes.STRING(32), allowNull: false },
   zipCode: { type: DataTypes.STRING(32), allowNull: false },
   city: { type: DataTypes.STRING(64), allowNull: false },
