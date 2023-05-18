@@ -205,7 +205,7 @@ const userCtrl = {
   // Mise à jour des informations de l’utilisateur ciblé par l’ID.
   updateOneUser: async (req, res) => {
     try {
-      const userId = req.params.userId;
+      const { userId } = req.params;
       const user = await Users.findByPk(userId);
       // UPDATE Users
       // SET firstName = 'valeur_firstName', lastName =
@@ -258,7 +258,7 @@ const userCtrl = {
     try {
       // DELETE FROM Users
       // WHERE id = 'valeur_id';
-      const userId = req.params.userId;
+      const { userId } = req.params;
       const user = await Users.findByPk(userId);
 
       if (!user) {
@@ -275,7 +275,7 @@ const userCtrl = {
   // Récupère la liste des événements auxquels un utilisateur ayant l’ID spécifié participe.
   getAllEventsFromOneUser: async (req, res) => {
     try {
-      const { id: userId } = req.params;
+      const { userId } = req.params;
 
       const user = await Users.findByPk(userId);
 
@@ -299,9 +299,9 @@ const userCtrl = {
   // Récupère la liste des événements créés par un utilisateur ayant l’ID spécifié.
   getAllEventsCreatedByOneUser: async (req, res) => {
     try {
-      const { id } = req.params;
+      const { userId } = req.params;
 
-      const user = await Users.findByPk(id);
+      const user = await Users.findByPk(userId);
 
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
@@ -371,7 +371,7 @@ const userCtrl = {
   // Récupère la liste des sports préférés d'un utilisateur ciblé par son ID.
   getAllSportsFromOneUser: async (req, res) => {
     try {
-      const { id: userId } = req.params;
+      const { userId } = req.params;
 
       const user = await Users.findByPk(userId);
 
