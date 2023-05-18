@@ -7,7 +7,8 @@ const userCtrl = {
   // Récupère tous les utilisateurs.
   getAllUsers: async (req, res) => {
     try {
-      // SELECT id, isAdmin, userName,dateOfBirth, gender, region, city, description FROM users;
+      // SELECT id, is_admin, user_name, date_of_birth, gender, region,
+      // city, description FROM users;
 
       const users = await Users.findAll();
 
@@ -34,12 +35,12 @@ const userCtrl = {
     const { userId } = req.params;
 
     try {
-      // SELECT id, isAdmin, userName, dateOfBirth, gender, region, city,
-      // description FROM users WHERE id = $1;
+      // SELECT id, is_admin, user_name, date_of_birth, gender, region,
+      // city, description, created_at FROM users WHERE id = 'valeur_users.id';
       console.log(userId);
       const user = await Users.findByPk(userId);
       if (!user) {
-        res.status(404).json('User not found');
+        res.status(404).json('Utilisateur introuvable');
       } else {
         // On filtre pour n'afficher que les informations publiques
         const publicUserInfo = {
@@ -65,11 +66,12 @@ const userCtrl = {
     const { userId } = req.params;
 
     try {
-    // SELECT id, userName, email, firstName, lastName, password FROM users WHERE id = $1;
+    // SELECT id, user_name, email, first_name, last_name,
+    // password FROM users WHERE id = 'valeur_users.id';
       const user = await Users.findByPk(userId);
 
       if (!user) {
-        return res.status(404).json('User not found');
+        return res.status(404).json('Utilisateur introuvable');
       }
 
       // On filtre pour n'afficher que les informations privées
@@ -171,12 +173,12 @@ const userCtrl = {
       // Encryption du mot de passe.
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // INSERT INTO Users (firstName, lastName, userName, isAdmin,
-      // email, password, dateOfBirth, gender, region, zipCode, city, street)
-      // VALUES ('valeur_firstName', 'valeur_lastName',
-      // 'valeur_userName', false, 'valeur_email', 'valeur_password',
-      // 'valeur_dateOfBirth', 'valeur_gender',
-      // 'valeur_region', 'valeur_zipCode', 'valeur_city', 'valeur_street');
+      // INSERT INTO users (first_name, last_name, user_name, is_admin,
+      // email, password, date_of_birth, gender, region, zip_code, city, street)
+      // VALUES ('valeur_first_name', 'valeur_last_name',
+      // 'valeur_user_name', false, 'valeur_email', 'valeur_password',
+      // 'valeur_date_of_birth', 'valeur_gender',
+      // 'valeur_region', 'valeur_zip_code', 'valeur_city', 'valeur_street');
       // Création de l'utilisateur avec les champs recquis.
       await Users.create({
         firstName,
@@ -205,18 +207,18 @@ const userCtrl = {
   // Mise à jour des informations de l’utilisateur ciblé par l’ID.
   updateOneUser: async (req, res) => {
     try {
-      const userId = req.params.userId;
+      const { userId } = req.params;
       const user = await Users.findByPk(userId);
-      // UPDATE Users
-      // SET firstName = 'valeur_firstName', lastName =
-      // 'valeur_lastName', userName = 'valeur_userName', email =
-      // 'valeur_email', password = 'valeur_password', dateOfBirth =
-      // 'valeur_dateOfBirth', gender = 'valeur_gender', region =
-      // 'valeur_region', zipCode = 'valeur_zipCode', city =
+      // UPDATE users
+      // SET first_name = 'valeur_first_name', last_name =
+      // 'valeur_last_name', user_name = 'valeur_user_name', email =
+      // 'valeur_email', password = 'valeur_password', date_of_birth =
+      // 'valeur_date_of_birth', gender = 'valeur_gender', region =
+      // 'valeur_region', zip_code = 'valeur_zip_code', city =
       // 'valeur_city', street = 'valeur_street'
-      // WHERE id = 'valeur_id';
+      // WHERE id = 'valeur_users.id';
       if (!user) {
-        return res.status(404).send(`Can't find user with id ${userId}`);
+        return res.status(404).send(`Impossible de trouver l'utilisateur avec l'identifiant ${userId}`);
       }
       const {
         firstName,
@@ -243,7 +245,7 @@ const userCtrl = {
       if (zipCode) user.zipCode = zipCode;
       if (city) user.city = city;
       if (street) user.street = street;
-
+      user.updateAt = new Date();
       // Sauvegarde des champs dans la BDD.
       await user.save();
       return res.json(user);
@@ -256,16 +258,16 @@ const userCtrl = {
   // Supprime un utilisateur ciblé par l’ID.
   deleteOneUser: async (req, res) => {
     try {
-      // DELETE FROM Users
-      // WHERE id = 'valeur_id';
-      const userId = req.params.userId;
+      // DELETE FROM users
+      // WHERE id = 'valeur_users.id';
+      const { userId } = req.params;
       const user = await Users.findByPk(userId);
 
       if (!user) {
-        return res.status(404).send(`Can't find user with id ${userId}`);
+        return res.status(404).send(`Utilisateur avec l'identifiant  ${userId} introuvable`);
       }
       await user.destroy();
-      return res.json({ message: `User with id ${userId} has been deleted` });
+      return res.json({ message: `L'utilisateur avec l'identifiant ${userId} vient d'être supprimé` });
     } catch (error) {
       logger.log(error);
       return res.status(500).json({ error: error.message });
@@ -275,12 +277,14 @@ const userCtrl = {
   // Récupère la liste des événements auxquels un utilisateur ayant l’ID spécifié participe.
   getAllEventsFromOneUser: async (req, res) => {
     try {
-      const { id: userId } = req.params;
+      // SELECT * FROM events
+      // WHERE id IN (SELECT event_id FROM users_join_events WHERE user_id = valeur_users.id);
+      const { userId } = req.params;
 
       const user = await Users.findByPk(userId);
 
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'Utilisateur introuvable' });
       }
 
       // Recherche des événements auxquels l'utilisateur participe
@@ -299,12 +303,13 @@ const userCtrl = {
   // Récupère la liste des événements créés par un utilisateur ayant l’ID spécifié.
   getAllEventsCreatedByOneUser: async (req, res) => {
     try {
-      const { id } = req.params;
+      // SELECT * FROM events WHERE creator_id = 'valeur_users.id';
+      const { userId } = req.params;
 
-      const user = await Users.findByPk(id);
+      const user = await Users.findByPk(userId);
 
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'Utilisateur introuvable' });
       }
 
       // Recherche des événements créés par l'uilisateur
@@ -323,13 +328,15 @@ const userCtrl = {
   // Ajoute un utilisateur identifié par son ID à l’événement identifié par son ID.
   addOneUserToOneEvent: async (req, res) => {
     try {
+      // INSERT INTO users_join_events (user_id, event_id)
+      // VALUES ('valeur_user_id', 'valeur_event_id');
       const { userId, eventId } = req.params;
 
       const user = await Users.findByPk(userId);
       const event = await Events.findByPk(eventId);
 
       if (!user || !event) {
-        return res.status(404).json({ error: 'User or Event not found' });
+        return res.status(404).json({ error: 'Utilisateur ou évènement introuvable' });
       }
 
       // On ajoute l'utilisateur à l'événement.
@@ -337,7 +344,7 @@ const userCtrl = {
       // infos fournies dans les modèles.
       await user.addUserEvents(event);
 
-      return res.json({ message: 'User added to the event successfully' });
+      return res.json({ message: 'Utilisateur ajouté à l\'évènement avec succès' });
     } catch (error) {
       logger.log(error);
       return res.status(500).json({ error: error.message });
@@ -347,13 +354,15 @@ const userCtrl = {
   // Supprime un utilisateur identifié par son ID de l’événement identifié par son ID.
   deleteOneUserFromOneEvent: async (req, res) => {
     try {
+      // DELETE FROM users_join_events
+      // WHERE user_id = 'valeur_user_id' AND event_id = 'valeur_event_id';
       const { userId, eventId } = req.params;
 
       const user = await Users.findByPk(userId);
       const event = await Events.findByPk(eventId);
 
       if (!user || !event) {
-        return res.status(404).json({ error: 'User or Event not found' });
+        return res.status(404).json({ error: 'Utilisateur ou évènement introuvable' });
       }
 
       // On supprime l'utilisateur de l'événement.
@@ -361,7 +370,7 @@ const userCtrl = {
       // infos fournies dans les modèles.
       await user.removeUserEvents(event);
 
-      return res.json({ message: 'User removed from the event successfully' });
+      return res.json({ message: 'Utilisateur supprimé de l\'évènement avec succès' });
     } catch (error) {
       logger.log(error);
       return res.status(500).json({ error: error.message });
@@ -371,12 +380,16 @@ const userCtrl = {
   // Récupère la liste des sports préférés d'un utilisateur ciblé par son ID.
   getAllSportsFromOneUser: async (req, res) => {
     try {
-      const { id: userId } = req.params;
+      // SELECT name
+      // FROM sports
+      // INNER JOIN users_like_sports ON sports.id = users_like_sports.sport_id
+      // WHERE users_like_sports.user_id = 'valeur_user_id';
+      const { userId } = req.params;
 
       const user = await Users.findByPk(userId);
 
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'Utilisateur introuvable' });
       }
 
       // Recherche des sports préférés de l'utilisateur.
@@ -395,13 +408,15 @@ const userCtrl = {
   // Ajoute le sport identifié par son ID à l’utilisateur identifié par son ID.
   addOneSportToOneUser: async (req, res) => {
     try {
+      // INSERT INTO users_like_sports (user_id, sport_id)
+      // VALUES ('valeur_user_id', 'valeur_sport_id');
       const { userId, sportId } = req.params;
 
       const user = await Users.findByPk(userId);
       const sport = await Sports.findByPk(sportId);
 
       if (!user || !sport) {
-        return res.status(404).json({ error: 'User or Sport not found' });
+        return res.status(404).json({ error: 'Utilisateur ou sport introuvable' });
       }
 
       // Ajout du sport aux favoris de l'utilisateur.
@@ -409,23 +424,25 @@ const userCtrl = {
       // infos fournies dans les modèles.
       await user.addFavoriteSport(sport);
 
-      return res.json({ message: 'Sport added to the user\'s favorites successfully' });
+      return res.json({ message: 'Sport favori ajouté à l\'utilisateur avec succès' });
     } catch (error) {
       logger.log(error);
       return res.status(500).json({ error: error.message });
     }
   },
 
-  // Supprime le sport identifié par son ID à l’utilisateur identifié par son ID.
+  // Supprime le sport favori identifié par son ID à l’utilisateur identifié par son ID.
   deleteOneSportToOneUser: async (req, res) => {
     try {
+      // DELETE FROM users_like_sports
+      // WHERE user_id = 'valeur_user_id' AND sport_id ='valeur_sport_id';
       const { userId, sportId } = req.params;
 
       const user = await Users.findByPk(userId);
       const sport = await Sports.findByPk(sportId);
 
       if (!user || !sport) {
-        return res.status(404).json({ error: 'User or Sport not found' });
+        return res.status(404).json({ error: 'Utilisateur ou sport introuvable' });
       }
 
       // Suppression du sport des favoris de l'utilisateur
@@ -433,7 +450,7 @@ const userCtrl = {
       // infos fournies dans les modèles.
       await user.removeFavoriteSport(sport);
 
-      return res.json({ message: 'Sport removed from the user\'s favorites successfully' });
+      return res.json({ message: 'Sport favori de l\'utilisateur supprimé avec succès' });
     } catch (error) {
       logger.log(error);
       return res.status(500).json({ error: error.message });

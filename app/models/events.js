@@ -10,6 +10,7 @@ Events.init({
   city: { type: DataTypes.STRING(64), allowNull: false },
   street: { type: DataTypes.STRING(255), allowNull: false },
   description: { type: DataTypes.STRING(500) },
+  maxNbParticipants: { type: DataTypes.INTEGER, allowNull: false },
   startingTime: { type: DataTypes.DATE, allowNull: false },
   endingTime: { type: DataTypes.DATE, allowNull: false },
 }, {

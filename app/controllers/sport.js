@@ -16,11 +16,11 @@ const sportCtrl = {
     const sportId = req.params.id;
 
     try {
-      // SELECT * FROM sports WHERE id = $1;
+      // SELECT * FROM sports WHERE id = 'valeur_sports_id';
       const sport = await Sports.findByPk(sportId);
 
       if (!sport) {
-        res.status(404).json('Sport not found');
+        res.status(404).json('Sport introuvable');
       } else {
         res.json(sport);
       }
@@ -53,6 +53,7 @@ const sportCtrl = {
           });
           return;
         }
+        // INSERT INTO sports (name) VALUES ('nom_du_sport');
         await Sports.create({ name });
         res.json({
           message: 'Le nouveau sport a bien été créé',
@@ -75,13 +76,14 @@ const sportCtrl = {
         const sport = await Sports.findByPk(sportId);
 
         if (!sport) {
-          res.status(404).send(`Can't find sport with id ${sportId}`);
+          res.status(404).send(`Le sport avec l'identifiant ${sportId} est introuvable`);
         } else {
           const { name } = req.body;
 
           if ({ name }) sport.name = name;
 
           // Sauvegarde des champs dans la BDD.
+          // UPDATE sports SET name = 'nouveau_nom' WHERE id = 'sport_id';
           await sport.save();
           res.json(sport);
         }
@@ -103,10 +105,11 @@ const sportCtrl = {
         const sport = await Sports.findByPk(sportId);
 
         if (!sport) {
-          res.status(404).send(`Can't find sport with id ${sportId}`);
+          res.status(404).send(`Le sport avec l'identifiant ${sportId} est introuvable`);
         } else {
+          //  DELETE FROM sports WHERE id = 'sport_id';
           await sport.destroy();
-          res.json({ message: `Sport with id ${sportId} has been deleted` });
+          res.json({ message: `Le sport avec l'identifiant ${sportId} vient d'être supprimé` });
         }
       } catch (error) {
         console.log(error);
