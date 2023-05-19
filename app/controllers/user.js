@@ -4,26 +4,22 @@ const { Users, Events, Sports } = require('../models');
 const logger = require('../utils/logger');
 
 const userCtrl = {
+
   // Récupère tous les utilisateurs.
   getAllUsers: async (req, res) => {
     try {
-      // SELECT id, isAdmin, userName,dateOfBirth, gender, region, city, description FROM users;
+      // SELECT id, isAdmin, userName, region, city, description FROM users;
+      const users = await Users.findAll({
+        attributes: { exclude: ['email', 'password', 'lastName', 'firstName', 'zipCode', 'street'] },
+        include: [
+          {
+            model: Sports,
+            as: 'favoriteSports',
+          },
+        ],
+      });
 
-      const users = await Users.findAll();
-
-      // On filtre pour n'afficher que les informations publiques
-      const publicUsersInfo = users.map((user) => ({
-        id: user.id,
-        isAdmin: user.isAdmin,
-        userName: user.userName,
-        dateOfBirth: user.dateOfBirth,
-        gender: user.gender,
-        region: user.region,
-        city: user.city,
-        description: user.description,
-      }));
-
-      res.json(publicUsersInfo);
+      res.json(users);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -34,26 +30,21 @@ const userCtrl = {
     const { userId } = req.params;
 
     try {
-      // SELECT id, isAdmin, userName, dateOfBirth, gender, region, city,
-      // description FROM users WHERE id = $1;
-      console.log(userId);
-      const user = await Users.findByPk(userId);
+      // SELECT id, isAdmin, userName, region, city, description FROM users WHERE id = $1;
+      const user = await Users.findByPk(userId, {
+        attributes: { exclude: ['email', 'password', 'lastName', 'firstName', 'zipCode', 'street'] },
+        include: [
+          {
+            model: Sports,
+            as: 'favoriteSports',
+          },
+        ],
+      });
+
       if (!user) {
         res.status(404).json('User not found');
       } else {
-        // On filtre pour n'afficher que les informations publiques
-        const publicUserInfo = {
-          id: user.id,
-          isAdmin: user.isAdmin,
-          userName: user.userName,
-          dateOfBirth: user.dateOfBirth,
-          gender: user.gender,
-          region: user.region,
-          city: user.city,
-          description: user.description,
-          createdAt: user.createdAt,
-        };
-        res.json(publicUserInfo);
+        res.json(user);
       }
     } catch (error) {
       res.status(500).json(error);
@@ -65,24 +56,16 @@ const userCtrl = {
     const { userId } = req.params;
 
     try {
-    // SELECT id, userName, email, firstName, lastName, password FROM users WHERE id = $1;
-      const user = await Users.findByPk(userId);
+      // SELECT id, username, email, firstname, lastname, password FROM users WHERE id = $1;
+      const user = await Users.findByPk(userId, {
+        attributes: ['id', 'userName', 'email', 'firstName', 'lastName', 'zipCode', 'street'],
+      });
 
       if (!user) {
         return res.status(404).json('User not found');
       }
 
-      // On filtre pour n'afficher que les informations privées
-      const privateUserInfo = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        password: user.password,
-      };
-
-      return res.json(privateUserInfo);
+      return res.json(user);
     } catch (error) {
       return res.status(500).json(error);
     }
@@ -99,8 +82,6 @@ const userCtrl = {
         email,
         password,
         passwordConfirm,
-        dateOfBirth,
-        gender,
         region,
         zipCode,
         city,
@@ -122,14 +103,8 @@ const userCtrl = {
       if (!lastName) {
         bodyErrors.push('Le nom de famille ne peut pas être vide');
       }
-      if (!dateOfBirth) {
-        bodyErrors.push('La date de naissance ne peut pas être vide');
-      }
-      if (!gender) {
-        bodyErrors.push('Le genre ne peut pas être vide');
-      }
       if (!userName) {
-        bodyErrors.push('Le nom d\'utilisateur ne peut pas être vide');
+        bodyErrors.push("Le nom d'utilisateur ne peut pas être vide");
       }
       if (!region) {
         bodyErrors.push('La région ne peut pas être vide');
@@ -171,12 +146,6 @@ const userCtrl = {
       // Encryption du mot de passe.
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // INSERT INTO Users (firstName, lastName, userName, isAdmin,
-      // email, password, dateOfBirth, gender, region, zipCode, city, street)
-      // VALUES ('valeur_firstName', 'valeur_lastName',
-      // 'valeur_userName', false, 'valeur_email', 'valeur_password',
-      // 'valeur_dateOfBirth', 'valeur_gender',
-      // 'valeur_region', 'valeur_zipCode', 'valeur_city', 'valeur_street');
       // Création de l'utilisateur avec les champs recquis.
       await Users.create({
         firstName,
@@ -185,8 +154,6 @@ const userCtrl = {
         isAdmin: false,
         email,
         password: hashedPassword,
-        dateOfBirth,
-        gender,
         region,
         zipCode,
         city,
@@ -207,14 +174,7 @@ const userCtrl = {
     try {
       const { userId } = req.params;
       const user = await Users.findByPk(userId);
-      // UPDATE Users
-      // SET firstName = 'valeur_firstName', lastName =
-      // 'valeur_lastName', userName = 'valeur_userName', email =
-      // 'valeur_email', password = 'valeur_password', dateOfBirth =
-      // 'valeur_dateOfBirth', gender = 'valeur_gender', region =
-      // 'valeur_region', zipCode = 'valeur_zipCode', city =
-      // 'valeur_city', street = 'valeur_street'
-      // WHERE id = 'valeur_id';
+
       if (!user) {
         return res.status(404).send(`Can't find user with id ${userId}`);
       }
@@ -224,8 +184,6 @@ const userCtrl = {
         userName,
         email,
         password,
-        dateOfBirth,
-        gender,
         region,
         zipCode,
         city,
@@ -237,8 +195,6 @@ const userCtrl = {
       if (userName) user.userName = userName;
       if (email) user.email = email;
       if (password) user.password = await bcrypt.hash(password, 10);
-      if (dateOfBirth) user.dateOfBirth = dateOfBirth;
-      if (gender) user.gender = gender;
       if (region) user.region = region;
       if (zipCode) user.zipCode = zipCode;
       if (city) user.city = city;
@@ -248,7 +204,6 @@ const userCtrl = {
       await user.save();
       return res.json(user);
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ error: error.message });
     }
   },
@@ -256,8 +211,6 @@ const userCtrl = {
   // Supprime un utilisateur ciblé par l’ID.
   deleteOneUser: async (req, res) => {
     try {
-      // DELETE FROM Users
-      // WHERE id = 'valeur_id';
       const { userId } = req.params;
       const user = await Users.findByPk(userId);
 
@@ -286,7 +239,12 @@ const userCtrl = {
       // Recherche des événements auxquels l'utilisateur participe
       // La méthode "getUserEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
-      const events = await user.getUserEvents();
+      const events = await user.getUserEvents({
+        include: [
+          { model: Users, as: 'creator', attributes: ['userName'] },
+          { model: Sports, as: 'sport', attributes: ['name'] },
+        ],
+      });
 
       // On retourne la liste des événements
       return res.json(events);
@@ -310,7 +268,12 @@ const userCtrl = {
       // Recherche des événements créés par l'uilisateur
       // La méthode "getCreatedEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
-      const events = await user.getCreatedEvents();
+      const events = await user.getCreatedEvents({
+        include: [
+          { model: Users, as: 'creator', attributes: ['userName'] },
+          { model: Sports, as: 'sport', attributes: ['name'] },
+        ],
+      });
 
       // On retourne la liste des événements
       return res.json(events);

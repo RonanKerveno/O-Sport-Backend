@@ -1,11 +1,24 @@
-const { Events } = require('../models');
+const { Events, Users, Sports } = require('../models');
 
 const eventCtrl = {
 
   getAllEvents: async (req, res) => {
     try {
       // SELECT * FROM sports;
-      const events = await Events.findAll();
+      const events = await Events.findAll({
+        include: [
+          {
+            model: Users,
+            as: 'creator',
+            attributes: ['userName'],
+          },
+          {
+            model: Sports,
+            as: 'sport',
+            attributes: ['name'],
+          },
+        ],
+      });
       res.json(events);
     } catch (error) {
       res.status(500).json(error);
@@ -17,7 +30,20 @@ const eventCtrl = {
 
     try {
       // SELECT * FROM sports WHERE id = $1;
-      const event = await Events.findByPk(eventId);
+      const event = await Events.findByPk(eventId, {
+        include: [
+          {
+            model: Users,
+            as: 'creator',
+            attributes: ['userName'],
+          },
+          {
+            model: Sports,
+            as: 'sport',
+            attributes: ['name'],
+          },
+        ],
+      });
 
       if (!event) {
         res.status(404).json('Event not found');
