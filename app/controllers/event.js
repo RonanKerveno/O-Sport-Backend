@@ -1,11 +1,25 @@
-const { Events } = require('../models');
+const { Events, Users, Sports } = require('../models');
+// const countController = require('./countController');
 
 const eventCtrl = {
 
   getAllEvents: async (req, res) => {
     try {
-      // SELECT * FROM events;
-      const events = await Events.findAll();
+      // SELECT * FROM sports;
+      const events = await Events.findAll({
+        include: [
+          {
+            model: Users,
+            as: 'creator',
+            attributes: ['userName'],
+          },
+          {
+            model: Sports,
+            as: 'sport',
+            attributes: ['name'],
+          },
+        ],
+      });
       res.json(events);
     } catch (error) {
       res.status(500).json(error);
@@ -16,8 +30,21 @@ const eventCtrl = {
     const eventId = req.params.id;
 
     try {
-      // SELECT * FROM events WHERE id = 'valeur_events.id';
-      const event = await Events.findByPk(eventId);
+      // SELECT * FROM sports WHERE id = $1;
+      const event = await Events.findByPk(eventId, {
+        include: [
+          {
+            model: Users,
+            as: 'creator',
+            attributes: ['userName'],
+          },
+          {
+            model: Sports,
+            as: 'sport',
+            attributes: ['name'],
+          },
+        ],
+      });
 
       if (!event) {
         res.status(404).json('Evènement introuvable');
@@ -32,6 +59,7 @@ const eventCtrl = {
   createOneEvent: async (req, res) => {
     try {
       const {
+        sportId,
         title,
         region,
         zipCode,
@@ -44,8 +72,11 @@ const eventCtrl = {
       } = req.body;
 
       const bodyErrors = [];
-      if (!title) {
+      if (!sportId) {
         bodyErrors.push('Le nom du sport ne peut pas être vide');
+      }
+      if (!title) {
+        bodyErrors.push('Le titre de l\'évènement ne peut pas être vide');
       }
       if (!region) {
         bodyErrors.push('La région ne peut pas être vide');
@@ -73,6 +104,7 @@ const eventCtrl = {
       }
       const checkEvent = await Events.findOne({
         where: {
+          sportId,
           title,
           region,
           zipCode,
@@ -97,6 +129,8 @@ const eventCtrl = {
       //  'valeur_startingTime', 'valeur_endingTime',
       // 'valeur_created_at', 'valeur_updated_at');
       await Events.create({
+        sportId,
+        creatorId: req.user.userId,
         title,
         region,
         zipCode,
@@ -107,9 +141,11 @@ const eventCtrl = {
         startingTime,
         endingTime,
       });
+      // await this.creator_id.addUserEvents(event);
       res.json({
         message: 'Le nouvel évènement sportif a bien été créé',
       });
+      // countController.startCount();
     } catch (error) {
       console.log(error);
       res.json({ error: error.message });
@@ -131,6 +167,7 @@ const eventCtrl = {
           city,
           street,
           description,
+          maxNbParticipants,
           startingTime,
           endingTime,
         } = req.body;
@@ -141,6 +178,7 @@ const eventCtrl = {
         if (city) event.city = city;
         if (street) event.street = street;
         if (description) event.description = description;
+        if (maxNbParticipants) event.maxNbParticipants = maxNbParticipants;
         if (startingTime) event.startingTime = startingTime;
         if (endingTime) event.endingTime = endingTime;
 
@@ -149,6 +187,7 @@ const eventCtrl = {
         // SET title = 'valeur_title', region = 'valeur_region',
         // zip_code = 'valeur_zip_code', city = 'valeur_city',
         // street = 'valeur_street', description = 'valeur_description',
+        // maxNbParticipants = 'maxNbParticipants',
         // starting_time = 'valeur_starting_time',
         // ending_time = 'valeur_ending_time',
         // created_at = 'valeur_created_at',

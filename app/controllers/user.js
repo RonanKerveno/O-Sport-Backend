@@ -7,24 +7,18 @@ const userCtrl = {
   // Récupère tous les utilisateurs.
   getAllUsers: async (req, res) => {
     try {
-      // SELECT id, is_admin, user_name, date_of_birth, gender, region,
-      // city, description FROM users;
+      // SELECT id, isAdmin, userName, region, city, description FROM users;
+      const users = await Users.findAll({
+        attributes: { exclude: ['email', 'password', 'lastName', 'firstName', 'zipCode', 'street'] },
+        include: [
+          {
+            model: Sports,
+            as: 'favoriteSports',
+          },
+        ],
+      });
 
-      const users = await Users.findAll();
-
-      // On filtre pour n'afficher que les informations publiques
-      const publicUsersInfo = users.map((user) => ({
-        id: user.id,
-        isAdmin: user.isAdmin,
-        userName: user.userName,
-        dateOfBirth: user.dateOfBirth,
-        gender: user.gender,
-        region: user.region,
-        city: user.city,
-        description: user.description,
-      }));
-
-      res.json(publicUsersInfo);
+      res.json(users);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -35,26 +29,21 @@ const userCtrl = {
     const { userId } = req.params;
 
     try {
-      // SELECT id, is_admin, user_name, date_of_birth, gender, region,
-      // city, description, created_at FROM users WHERE id = 'valeur_users.id';
-      console.log(userId);
-      const user = await Users.findByPk(userId);
+      // SELECT id, isAdmin, userName, region, city, description FROM users WHERE id = $1;
+      const user = await Users.findByPk(userId, {
+        attributes: { exclude: ['email', 'password', 'lastName', 'firstName', 'zipCode', 'street'] },
+        include: [
+          {
+            model: Sports,
+            as: 'favoriteSports',
+          },
+        ],
+      });
+
       if (!user) {
         res.status(404).json('Utilisateur introuvable');
       } else {
-        // On filtre pour n'afficher que les informations publiques
-        const publicUserInfo = {
-          id: user.id,
-          isAdmin: user.isAdmin,
-          userName: user.userName,
-          dateOfBirth: user.dateOfBirth,
-          gender: user.gender,
-          region: user.region,
-          city: user.city,
-          description: user.description,
-          createdAt: user.createdAt,
-        };
-        res.json(publicUserInfo);
+        res.json(user);
       }
     } catch (error) {
       res.status(500).json(error);
@@ -66,25 +55,16 @@ const userCtrl = {
     const { userId } = req.params;
 
     try {
-    // SELECT id, user_name, email, first_name, last_name,
-    // password FROM users WHERE id = 'valeur_users.id';
-      const user = await Users.findByPk(userId);
+      // SELECT id, username, email, firstname, lastname, password FROM users WHERE id = $1;
+      const user = await Users.findByPk(userId, {
+        attributes: ['id', 'userName', 'email', 'firstName', 'lastName', 'zipCode', 'street'],
+      });
 
       if (!user) {
         return res.status(404).json('Utilisateur introuvable');
       }
 
-      // On filtre pour n'afficher que les informations privées
-      const privateUserInfo = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        password: user.password,
-      };
-
-      return res.json(privateUserInfo);
+      return res.json(user);
     } catch (error) {
       return res.status(500).json(error);
     }
@@ -277,8 +257,6 @@ const userCtrl = {
   // Récupère la liste des événements auxquels un utilisateur ayant l’ID spécifié participe.
   getAllEventsFromOneUser: async (req, res) => {
     try {
-      // SELECT * FROM events
-      // WHERE id IN (SELECT event_id FROM users_join_events WHERE user_id = valeur_users.id);
       const { userId } = req.params;
 
       const user = await Users.findByPk(userId);
@@ -290,7 +268,12 @@ const userCtrl = {
       // Recherche des événements auxquels l'utilisateur participe
       // La méthode "getUserEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
-      const events = await user.getUserEvents();
+      const events = await user.getUserEvents({
+        include: [
+          { model: Users, as: 'creator', attributes: ['userName'] },
+          { model: Sports, as: 'sport', attributes: ['name'] },
+        ],
+      });
 
       // On retourne la liste des événements
       return res.json(events);
@@ -303,7 +286,6 @@ const userCtrl = {
   // Récupère la liste des événements créés par un utilisateur ayant l’ID spécifié.
   getAllEventsCreatedByOneUser: async (req, res) => {
     try {
-      // SELECT * FROM events WHERE creator_id = 'valeur_users.id';
       const { userId } = req.params;
 
       const user = await Users.findByPk(userId);
@@ -315,7 +297,12 @@ const userCtrl = {
       // Recherche des événements créés par l'uilisateur
       // La méthode "getCreatedEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
-      const events = await user.getCreatedEvents();
+      const events = await user.getCreatedEvents({
+        include: [
+          { model: Users, as: 'creator', attributes: ['userName'] },
+          { model: Sports, as: 'sport', attributes: ['name'] },
+        ],
+      });
 
       // On retourne la liste des événements
       return res.json(events);
