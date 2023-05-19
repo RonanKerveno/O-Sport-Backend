@@ -17,7 +17,7 @@ const authController = {
       });
 
       if (!user) {
-        return res.status(400).json({ error: 'Incorrect username or password.' });
+        return res.status(400).json({ error: 'Pseudo ou mot de passe incorrect' });
       }
 
       // On compare le mot de passe fourni avec le mot de passe hashé dans la BDD.
@@ -25,7 +25,7 @@ const authController = {
 
       // Si le mot de passe n'est pas valide on retourne une erreur 400 (Bad Request).
       if (!isPasswordValid) {
-        return res.status(400).json({ error: 'Incorrect username or password.' });
+        return res.status(400).json({ error: 'Pseudo ou mot de passe incorrect' });
       }
 
       // Identifiants OK = génération du token JWT.

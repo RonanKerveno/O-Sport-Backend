@@ -1,4 +1,5 @@
 const { Events, Users, Sports } = require('../models');
+// const countController = require('./countController');
 
 const eventCtrl = {
 
@@ -46,7 +47,7 @@ const eventCtrl = {
       });
 
       if (!event) {
-        res.status(404).json('Event not found');
+        res.status(404).json('Evènement introuvable');
       } else {
         res.json(event);
       }
@@ -58,19 +59,24 @@ const eventCtrl = {
   createOneEvent: async (req, res) => {
     try {
       const {
+        sportId,
         title,
         region,
         zipCode,
         city,
         street,
         description,
+        maxNbParticipants,
         startingTime,
         endingTime,
       } = req.body;
 
       const bodyErrors = [];
-      if (!title) {
+      if (!sportId) {
         bodyErrors.push('Le nom du sport ne peut pas être vide');
+      }
+      if (!title) {
+        bodyErrors.push('Le titre de l\'évènement ne peut pas être vide');
       }
       if (!region) {
         bodyErrors.push('La région ne peut pas être vide');
@@ -98,12 +104,14 @@ const eventCtrl = {
       }
       const checkEvent = await Events.findOne({
         where: {
+          sportId,
           title,
           region,
           zipCode,
           city,
           street,
           description,
+          maxNbParticipants,
           startingTime,
           endingTime,
         },
@@ -114,19 +122,30 @@ const eventCtrl = {
         });
         return;
       }
+      // INSERT INTO events (title, sport_id, region, zip_code, city, street,
+      // description, max_nb_participants, starting_time, ending_time, created_at, updated_at)
+      // VALUES ('valeur_title', 'valeur_sport_id', 'valeur_region', 'valeur_zipCode',
+      // 'valeur_city', 'valeur_street', 'valeur_description', 'valeur_max_nb_participants',
+      //  'valeur_startingTime', 'valeur_endingTime',
+      // 'valeur_created_at', 'valeur_updated_at');
       await Events.create({
+        sportId,
+        creatorId: req.user.userId,
         title,
         region,
         zipCode,
         city,
         street,
         description,
+        maxNbParticipants,
         startingTime,
         endingTime,
       });
+      // await this.creator_id.addUserEvents(event);
       res.json({
         message: 'Le nouvel évènement sportif a bien été créé',
       });
+      // countController.startCount();
     } catch (error) {
       console.log(error);
       res.json({ error: error.message });
@@ -139,7 +158,7 @@ const eventCtrl = {
       const event = await Events.findByPk(eventId);
 
       if (!event) {
-        res.status(404).send(`Can't find event with id ${eventId}`);
+        res.status(404).send(`L'évènement avec l'identifiant ${eventId} est introuvable`);
       } else {
         const {
           title,
@@ -148,6 +167,7 @@ const eventCtrl = {
           city,
           street,
           description,
+          maxNbParticipants,
           startingTime,
           endingTime,
         } = req.body;
@@ -158,10 +178,21 @@ const eventCtrl = {
         if (city) event.city = city;
         if (street) event.street = street;
         if (description) event.description = description;
+        if (maxNbParticipants) event.maxNbParticipants = maxNbParticipants;
         if (startingTime) event.startingTime = startingTime;
         if (endingTime) event.endingTime = endingTime;
 
         // Sauvegarde des champs dans la BDD.
+        // UPDATE events
+        // SET title = 'valeur_title', region = 'valeur_region',
+        // zip_code = 'valeur_zip_code', city = 'valeur_city',
+        // street = 'valeur_street', description = 'valeur_description',
+        // maxNbParticipants = 'maxNbParticipants',
+        // starting_time = 'valeur_starting_time',
+        // ending_time = 'valeur_ending_time',
+        // created_at = 'valeur_created_at',
+        // updated_at = 'valeur_updated_at'
+        // WHERE id = 'valeur_event.id';
         await event.save();
         res.json(event);
       }
@@ -178,10 +209,10 @@ const eventCtrl = {
       const event = await Events.findByPk(eventId);
 
       if (!event) {
-        res.status(404).send(`Can't find event with id ${eventId}`);
+        res.status(404).send(`L'évènement avec l'identifiant ${eventId} est introuvable`);
       } else {
         await event.destroy();
-        res.json({ message: `Event with id ${eventId} has been deleted` });
+        res.json({ message: `L'évènement avec l'identifiant ${eventId} vient d'être supprimé` });
       }
     } catch (error) {
       console.log(error);

@@ -20,7 +20,7 @@ CREATE TABLE "users" (
     "street" VARCHAR (255),
     "description" VARCHAR (255),
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMPTZ 
+    "updated_at" TIMESTAMPTZ
 ); 
 
 CREATE TABLE "sports" (
@@ -38,6 +38,7 @@ CREATE TABLE "events" (
     "city" VARCHAR (64) NOT NULL,
     "street" VARCHAR (255) NOT NULL,
     "description" VARCHAR (500),
+    "max_nb_participants" INTEGER NOT NULL,
     "starting_time" TIMESTAMPTZ NOT NULL,
     "ending_time" TIMESTAMPTZ NOT NULL,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
