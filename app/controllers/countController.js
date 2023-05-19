@@ -10,18 +10,60 @@ Celui ci s'arrête au max défini.
 Les users voient les chiffres sur l'event.
 paricipants = user_id et creator_id
 */
-/*
-const { Users, Events, Sports } = require('../models');
+
+const { Users, Events } = require('../models');
 
 const countController = {
 
-  startCount: () => {
-    let maxPart = this.maxNbParticipants;
+  participants: [],
 
-    for (let counter = 0; counter < (maxPart + 1);
-      counter += 1) {
-      console.log('counter');
+  startCount: async (eventId, creatorId) => {
+    const event = await Events.findByPk(
+      eventId,
+      {
+        include: [
+          {
+            model: Users,
+            as: 'eventUsers',
+            attributes: ['id', 'userName'],
+          },
+          {
+            model: Events,
+            as: 'createdEvents',
+            attributes: ['creatorId'],
+          },
+        ],
+      },
+    );
+    if (!event) {
+      console.log(`L'événement avec l'identifiant ${eventId} est introuvable`);
+      return;
     }
+
+    countController.participants.push(event.eventUsers.userId);
+    console.log(userName);
+    console.log('Creator added as participant');
+  },
+
+  addUserToEvent: async (eventId, userId) => {
+    console.log('bla');
+    const event = await Events.findByPk(eventId);
+    if (!event) {
+      console.log(`L'événement avec l'identifiant ${eventId} est introuvable`);
+      return;
+    }
+
+    const maxPart = event.maxNbParticipants;
+
+    if (countController.participants.length >= maxPart) {
+      console.log('Le nombre maximum de participants a été atteint');
+      return;
+    }
+
+    countController.participants.push(userId);
+    console.log('User added as participant');
+    console.log(`Nombre de participants actuels : ${countController.participants.length}`);
   },
 };
-*/
+
+module.exports = countController;

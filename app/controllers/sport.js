@@ -1,11 +1,13 @@
-const { Sports } = require('../models');
+const { Users, Sports, Events } = require('../models');
 
 const sportCtrl = {
 
   getAllSports: async (req, res) => {
     try {
       // SELECT * FROM sports;
-      const sports = await Sports.findAll();
+      const sports = await Sports.findAll({
+        attributes: ['id', 'name'],
+      });
       res.json(sports);
     } catch (error) {
       res.status(500).json(error);
@@ -17,7 +19,22 @@ const sportCtrl = {
 
     try {
       // SELECT * FROM sports WHERE id = 'valeur_sports_id';
-      const sport = await Sports.findByPk(sportId);
+      const sport = await Sports.findByPk(sportId, {
+        attributes: ['id', 'name'],
+        include: [
+          {
+            model: Events,
+            as: 'sportEvents',
+            attributes: ['title', 'region', 'zipCode', 'city', 'street', 'description', 'maxNbParticipants', 'startingTime', 'endingTime'],
+            include: [
+              {
+                model: Users,
+                as: 'creator',
+                attributes: ['userName'],
+              }],
+          },
+        ],
+      });
 
       if (!sport) {
         res.status(404).json('Sport introuvable');

@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const emailValidator = require('email-validator');
 const { Users, Events, Sports } = require('../models');
 const logger = require('../utils/logger');
+const countController = require('./countController');
 
 const userCtrl = {
   // Récupère tous les utilisateurs.
@@ -270,8 +271,21 @@ const userCtrl = {
       // infos fournies dans les modèles.
       const events = await user.getUserEvents({
         include: [
-          { model: Users, as: 'creator', attributes: ['userName'] },
-          { model: Sports, as: 'sport', attributes: ['name'] },
+          {
+            model: Users,
+            as: 'creator',
+            attributes: ['userName'],
+          },
+          {
+            model: Sports,
+            as: 'sport',
+            attributes: ['name'],
+          },
+          {
+            model: Users,
+            as: 'eventUsers',
+            attributes: ['userName'],
+          },
         ],
       });
 
@@ -329,6 +343,7 @@ const userCtrl = {
       // On ajoute l'utilisateur à l'événement.
       // La méthode "addUserEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
+      countController.addUserToEvent(eventId, userId);
       await user.addUserEvents(event);
 
       return res.json({ message: 'Utilisateur ajouté à l\'évènement avec succès' });
