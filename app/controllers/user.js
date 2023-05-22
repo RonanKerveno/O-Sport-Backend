@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const emailValidator = require('email-validator');
 const { Users, Events, Sports } = require('../models');
 const logger = require('../utils/logger');
-const countController = require('./countController');
+const eventUsers = require('../services/eventUsers');
 
 const userCtrl = {
 
@@ -83,6 +83,8 @@ const userCtrl = {
         email,
         password,
         passwordConfirm,
+        dateOfBirth,
+        gender,
         region,
         zipCode,
         city,
@@ -106,6 +108,12 @@ const userCtrl = {
       }
       if (!userName) {
         bodyErrors.push("Le nom d'utilisateur ne peut pas être vide");
+      }
+      if (!dateOfBirth) {
+        bodyErrors.push("La date d'anniversaire ne peut pas être vide");
+      }
+      if (!gender) {
+        bodyErrors.push('Le genre ne peut pas être vide');
       }
       if (!region) {
         bodyErrors.push('La région ne peut pas être vide');
@@ -161,6 +169,8 @@ const userCtrl = {
         isAdmin: false,
         email,
         password: hashedPassword,
+        dateOfBirth,
+        gender,
         region,
         zipCode,
         city,
@@ -198,6 +208,8 @@ const userCtrl = {
         userName,
         email,
         password,
+        dateOfBirth,
+        gender,
         region,
         zipCode,
         city,
@@ -209,6 +221,8 @@ const userCtrl = {
       if (userName) user.userName = userName;
       if (email) user.email = email;
       if (password) user.password = await bcrypt.hash(password, 10);
+      if (dateOfBirth) user.dateOfBirth = dateOfBirth;
+      if (gender) user.gender = gender;
       if (region) user.region = region;
       if (zipCode) user.zipCode = zipCode;
       if (city) user.city = city;
@@ -329,7 +343,12 @@ const userCtrl = {
       // On ajoute l'utilisateur à l'événement.
       // La méthode "addUserEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
-      countController.addUserToEvent(eventId, userId);
+      const maxUsers = await eventUsers.countUsersFromOneEvent(eventId, userId);
+
+      if (maxUsers) {
+        return res.json({ message: 'Nombre maximum de participants atteint !' });
+      }
+
       await user.addUserEvents(event);
 
       return res.json({ message: 'Utilisateur ajouté à l\'évènement avec succès' });

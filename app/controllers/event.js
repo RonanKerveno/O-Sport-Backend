@@ -1,5 +1,5 @@
 const { Events, Users, Sports } = require('../models');
-const countController = require('./countController');
+const eventUsers = require('../services/eventUsers');
 
 const eventCtrl = {
 
@@ -48,6 +48,7 @@ const eventCtrl = {
             },
             {
               model: Users,
+              through: 'users-join-events',
               as: 'eventUsers',
               attributes: ['userName'],
             },
@@ -154,7 +155,7 @@ const eventCtrl = {
         startingTime,
         endingTime,
       });
-      countController.startCount(newEvent.id, newEvent.creatorId);
+      await eventUsers.addCreatorToEvent(newEvent.id, newEvent.creatorId);
       res.json({
         message: 'Le nouvel évènement sportif a bien été créé',
       });
