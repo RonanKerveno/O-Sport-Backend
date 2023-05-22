@@ -39,7 +39,15 @@ const authController = {
       const cookieExpiration = 24 * 60 * 60 * 1000; // 24 heures
 
       // On envoie le token dans un cookie httpOnly avec l'expiration.
-      res.cookie('token', token, { httpOnly: true, maxAge: cookieExpiration });
+
+      let cookieOptions = { httpOnly: true, maxAge: cookieExpiration };
+
+      // Options de cookies supplémentaires en production.
+      if (process.env.NODE_ENV === 'production') {
+        cookieOptions = { ...cookieOptions, secure: true, sameSite: 'none' };
+      }
+
+      res.cookie('token', token, cookieOptions);
 
       // On envoie une réponse de succès.
       return res.json({ message: 'Connexion réussie.' });
@@ -60,9 +68,12 @@ const authController = {
 
   logout: async (req, res) => {
     try {
-      // Pour supprimer le cookie coté client on l'écrase par un autre cookie qui expire de suite.
-      res.cookie('token', '', { httpOnly: true, maxAge: 0 });
-
+      let cookieOptions = { httpOnly: true, maxAge: 0 };
+      // Options de cookies supplémentaires en production.
+      if (process.env.NODE_ENV === 'production') {
+        cookieOptions = { ...cookieOptions, secure: true, sameSite: 'none' };
+      }
+      res.cookie('token', '', cookieOptions);
       // On envoie une réponse de succès.
       return res.json({ message: 'Déconnexion réussie.' });
     } catch (error) {
