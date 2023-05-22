@@ -1,5 +1,5 @@
 const { Events, Users, Sports } = require('../models');
-// const countController = require('./countController');
+const countController = require('./countController');
 
 const eventCtrl = {
 
@@ -7,6 +7,7 @@ const eventCtrl = {
     try {
       // SELECT * FROM sports;
       const events = await Events.findAll({
+        attributes: { exclude: ['description'] },
         include: [
           {
             model: Users,
@@ -31,20 +32,28 @@ const eventCtrl = {
 
     try {
       // SELECT * FROM sports WHERE id = $1;
-      const event = await Events.findByPk(eventId, {
-        include: [
-          {
-            model: Users,
-            as: 'creator',
-            attributes: ['userName'],
-          },
-          {
-            model: Sports,
-            as: 'sport',
-            attributes: ['name'],
-          },
-        ],
-      });
+      const event = await Events.findByPk(
+        eventId,
+        {
+          include: [
+            {
+              model: Users,
+              as: 'creator',
+              attributes: ['userName'],
+            },
+            {
+              model: Sports,
+              as: 'sport',
+              attributes: ['name'],
+            },
+            {
+              model: Users,
+              as: 'eventUsers',
+              attributes: ['userName'],
+            },
+          ],
+        },
+      );
 
       if (!event) {
         res.status(404).json('Evènement introuvable');
@@ -90,6 +99,9 @@ const eventCtrl = {
       if (!street) {
         bodyErrors.push('La rue ne peut pas être vide');
       }
+      if (!maxNbParticipants) {
+        bodyErrors.push('Le nombre maximum de participants ne peut pas être vide');
+      }
       if (!startingTime) {
         bodyErrors.push('La date-heure de début ne peut pas être vide');
       }
@@ -128,7 +140,8 @@ const eventCtrl = {
       // 'valeur_city', 'valeur_street', 'valeur_description', 'valeur_max_nb_participants',
       //  'valeur_startingTime', 'valeur_endingTime',
       // 'valeur_created_at', 'valeur_updated_at');
-      await Events.create({
+      // const createdEvent =
+      const newEvent = await Events.create({
         sportId,
         creatorId: req.user.userId,
         title,
@@ -141,11 +154,10 @@ const eventCtrl = {
         startingTime,
         endingTime,
       });
-      // await this.creator_id.addUserEvents(event);
+      countController.startCount(newEvent.id, newEvent.creatorId);
       res.json({
         message: 'Le nouvel évènement sportif a bien été créé',
       });
-      // countController.startCount();
     } catch (error) {
       console.log(error);
       res.json({ error: error.message });

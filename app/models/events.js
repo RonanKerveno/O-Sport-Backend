@@ -3,6 +3,7 @@ const sequelize = require('../utils/db');
 
 class Events extends Model {}
 
+
 Events.init({
   title: { type: DataTypes.STRING(64), allowNull: false },
   region: { type: DataTypes.STRING(32), allowNull: false },
