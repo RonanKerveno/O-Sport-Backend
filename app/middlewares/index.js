@@ -1,7 +1,11 @@
-const authentication = require('./authentication');
+const authenticationJWT = require('./authentication');
+const authorized = require('./authorized');
+const isLogged = require('./isLogged');
 const bodySanitizer = require('./bodySanitizer');
 
 module.exports = {
-  authentication,
+  authenticationJWT,
+  authorized,
+  isLogged,
   bodySanitizer,
 };
