@@ -48,6 +48,7 @@ const eventCtrl = {
             },
             {
               model: Users,
+              through: 'users-join-events',
               as: 'eventUsers',
               attributes: ['userName'],
             },
