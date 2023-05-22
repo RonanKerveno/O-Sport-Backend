@@ -1,5 +1,6 @@
 require('dotenv').config();
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 /* ---------- Express ---------- */
 
@@ -14,14 +15,21 @@ const middlewares = require('./app/middlewares');
 
 const app = express();
 const port = process.env.PORT || 5500;
+// Configuration Cors
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN,
+  credentials: true,
+};
 
 /* ---------- Middlewares ---------- */
 
 // On autorise tout les domaines à faire du Cross Origin Resource Sharing.
-app.use(cors('*'));
+app.use(cors(corsOptions));
 
 // Middleware pour parser les body request en JSON
 app.use(express.json());
+// Récupération des cookies
+app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, './public')));
 
