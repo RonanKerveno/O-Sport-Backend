@@ -13,7 +13,7 @@ paricipants = user_id et creator_id
 
 const { Users, Events } = require('../models');
 
-const countController = {
+const eventUsers = {
   /*
   startCount: async (eventId, creatorId) => {
     console.log(eventId);
@@ -41,45 +41,53 @@ const countController = {
     countController.participants.push(event.userId);
     console.log(`test 1: ${countController.participants}`);
     console.log(`test 2: ${event.eventUsers.userId}`);
-    console.log(`'test 3: 'Le créateur ${event.userEvents.userName} de l'évènement avec l'identifiant ${eventId} est ajouté en tant que participant`);
+    console.log(`'test 3: 'Le créateur ${event.userEvents
+    .userName} de l'évènement avec l'identifiant ${eventId}
+    est ajouté en tant que participant`);
   },
   */
-  startCount: async (eventId, userId) => {
+  addCreatorToEvent: async (eventId, userId) => {
     try {
-      const event = await Events.findByPk(eventId);
       const user = await Users.findByPk(userId);
+      const event = await Events.findByPk(eventId);
 
-      countController.addUserToEvent(eventId, userId);
+      eventUsers.countUsersFromOneEvent(eventId, userId);
       await user.addUserEvents(event);
-
       return;
     } catch (error) {
       console.log(error);
     }
   },
 
-  countUsersFromOneEvent: async (eventId, userId) => {
-    console.log('bla');
-    const event = await Events.findByPk(eventId);
-    if (!event) {
-      console.log(`L'événement avec l'identifiant ${eventId} est introuvable`);
-      return;
-    }
+  countUsersFromOneEvent: async (eventId) => {
+    // Recherche de l'évènement ciblé
+    const event = await Events.findByPk(
+      eventId,
+      {
+        include: [
+          {
+            model: Users,
+            through: 'users-join-events',
+            as: 'eventUsers',
+            attributes: ['userName'],
+          },
+        ],
+      },
+    );
 
+    console.log('ArrayCount : ', JSON.stringify(event, null, 2));
+    // Récupération du nombre max de participants à cet evt
     const maxPart = event.maxNbParticipants;
-    console.log(`maxnbpart : ${maxPart}`);
-    const nbUsers = Object.keys(event.eventUsers);
-    console.log(`nbUsers : ${nbUsers}`);
-    console.log(nbUsers.lenght);
+    console.log(`nb max de participants : ${maxPart}`);
+    // Récupération du nombre de participants déjà inscrits à l'instant même
+    const nbUsers = event.eventUsers.length;
+    console.log('Compteur : ', nbUsers);
 
-    if ((nbUsers.length) > maxPart) {
-      console.log('Le nombre maximum de participants a été atteint');
-      return;
+    if (nbUsers >= maxPart) {
+      return true;
     }
-
-    console.log(`User added as participant, son identifiants est : ${userId}`);
-    console.log(`Nombre de participants actuels : ${event.eventUsers.length}`);
+    return false;
   },
 };
 
-module.exports = countController;
+module.exports = eventUsers;
