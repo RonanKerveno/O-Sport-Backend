@@ -5,6 +5,7 @@ const logger = require('../utils/logger');
 const countController = require('./countController');
 
 const userCtrl = {
+
   // Récupère tous les utilisateurs.
   getAllUsers: async (req, res) => {
     try {
@@ -82,8 +83,6 @@ const userCtrl = {
         email,
         password,
         passwordConfirm,
-        dateOfBirth,
-        gender,
         region,
         zipCode,
         city,
@@ -105,14 +104,8 @@ const userCtrl = {
       if (!lastName) {
         bodyErrors.push('Le nom de famille ne peut pas être vide');
       }
-      if (!dateOfBirth) {
-        bodyErrors.push('La date de naissance ne peut pas être vide');
-      }
-      if (!gender) {
-        bodyErrors.push('Le genre ne peut pas être vide');
-      }
       if (!userName) {
-        bodyErrors.push('Le nom d\'utilisateur ne peut pas être vide');
+        bodyErrors.push("Le nom d'utilisateur ne peut pas être vide");
       }
       if (!region) {
         bodyErrors.push('La région ne peut pas être vide');
@@ -168,8 +161,6 @@ const userCtrl = {
         isAdmin: false,
         email,
         password: hashedPassword,
-        dateOfBirth,
-        gender,
         region,
         zipCode,
         city,
@@ -207,8 +198,6 @@ const userCtrl = {
         userName,
         email,
         password,
-        dateOfBirth,
-        gender,
         region,
         zipCode,
         city,
@@ -220,8 +209,6 @@ const userCtrl = {
       if (userName) user.userName = userName;
       if (email) user.email = email;
       if (password) user.password = await bcrypt.hash(password, 10);
-      if (dateOfBirth) user.dateOfBirth = dateOfBirth;
-      if (gender) user.gender = gender;
       if (region) user.region = region;
       if (zipCode) user.zipCode = zipCode;
       if (city) user.city = city;
@@ -231,7 +218,6 @@ const userCtrl = {
       await user.save();
       return res.json(user);
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ error: error.message });
     }
   },

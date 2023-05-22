@@ -3,9 +3,9 @@ BEGIN;
 --Mots de passe = username--
 INSERT INTO "users" ("id", "email", "is_admin", "user_name", "password", "last_name", "first_name", "date_of_birth", "gender", "region", "zip_code", "city", "street", "description", "created_at")
 VALUES
-    (1, 'brice.joe@gmail.com', FALSE, 'bricejoe', '$2b$10$rJygkv/lmkrDVlzOB2xSCevagOfuG8CSeXQVGuUokn4EiThyEMSOa', 'Joe', 'Brice', '15/10/1990', 'masculin', 'Île-de-France', '75008', 'Paris', '12 rue de l''Élysée', 'Hello tout le monde! Je suis un bon-vivant sportif aimant particulièrement les randonnées.. Au plaisir de vous rencontrer', '10/04/2023'),
-    (2, 'jean.dumas@hotmail.com', FALSE, 'jeandum', '$2b$10$2Vk6vOQlYyfZGkPALmND6OOupjGReaCdsnMqnPf35xgrGlGwoCl2W', 'Dumas', 'Jean', '05/05/2000', 'masculin','Occitanie', '66000', 'Perpignan', '15 boulevard des Pyrénées', 'Salut! Je suis un grand fan de tennis et j''aime participer à des événements sportifs.', '02/03/2023'),
-    (3, 'admin@admin.com', TRUE, 'admin', '$2b$10$T2Re39qvr7NUZPWJm2ByieunQrV4DVBk4VVPgC6OsKpi/BVsVKktO', 'lefort', 'Emilie', '01/02/1983', 'féminin', 'Occitanie', '68000', 'Colmar', '15 boulevard de Strasbourg', 'Salut! Je suis votre admin préférée !! En bref la loi c''est moi mais je suis plutôt cool et grande fan de sport!', '05/05/2023');
+    (1, 'brice.joe@gmail.com', FALSE, 'bricejoe', '$2b$10$rJygkv/lmkrDVlzOB2xSCevagOfuG8CSeXQVGuUokn4EiThyEMSOa', 'Joe', 'Brice', '1990-10-15', 'masculin', 'Île-de-France', '75008', 'Paris', '12 rue de l''Élysée', 'Hello tout le monde! Je suis un bon-vivant sportif aimant particulièrement les randonnées.. Au plaisir de vous rencontrer', '2023-04-10'),
+    (2, 'jean.dumas@hotmail.com', FALSE, 'jeandum', '$2b$10$2Vk6vOQlYyfZGkPALmND6OOupjGReaCdsnMqnPf35xgrGlGwoCl2W', 'Dumas', 'Jean', '2000-05-05', 'masculin','Occitanie', '66000', 'Perpignan', '15 boulevard des Pyrénées', 'Salut! Je suis un grand fan de tennis et j''aime participer à des événements sportifs.', '2023-03-02'),
+    (3, 'admin@admin.com', TRUE, 'admin', '$2b$10$T2Re39qvr7NUZPWJm2ByieunQrV4DVBk4VVPgC6OsKpi/BVsVKktO', 'lefort', 'Emilie', '1983-02-01', 'féminin', 'Occitanie', '68000', 'Colmar', '15 boulevard de Strasbourg', 'Salut! Je suis votre admin préférée !! En bref la loi c''est moi mais je suis plutôt cool et grande fan de sport!', '2023-05-05');
     
 INSERT INTO "sports" ("id", "name")
 VALUES 
@@ -24,7 +24,7 @@ VALUES
 INSERT INTO "users_join_events" ("event_id", "user_id")
 VALUES
     (1, 1),
-    (2, 1);
+    (2, 1),
     (2, 2);
 
 INSERT INTO "users_like_sports" ("user_id", "sport_id")
