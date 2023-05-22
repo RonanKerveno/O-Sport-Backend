@@ -15,9 +15,13 @@ const middlewares = require('./app/middlewares');
 
 const app = express();
 const port = process.env.PORT || 5500;
+
 // Configuration Cors
+
+const allowedOrigins = process.env.CORS_ORIGINS.split(',');
+
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN,
+  origin: allowedOrigins,
   credentials: true,
 };
 
