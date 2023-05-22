@@ -329,7 +329,7 @@ const userCtrl = {
       // On ajoute l'utilisateur à l'événement.
       // La méthode "addUserEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
-      countController.addUserToEvent(eventId, userId);
+      countController.countUsersFromOneEvent(eventId, userId);
       await user.addUserEvents(event);
 
       return res.json({ message: 'Utilisateur ajouté à l\'évènement avec succès' });
