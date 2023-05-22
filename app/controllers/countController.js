@@ -17,20 +17,17 @@ const countController = {
 
   participants: [],
 
-  startCount: async (eventId, creatorId) => {
+  startCount: async (eventId) => {
+    console.log(eventId);
     const event = await Events.findByPk(
       eventId,
       {
         include: [
           {
             model: Users,
-            as: 'eventUsers',
+            as: 'userEvents',
+            through: 'users_join_events',
             attributes: ['id', 'userName'],
-          },
-          {
-            model: Events,
-            as: 'createdEvents',
-            attributes: ['creatorId'],
           },
         ],
       },
@@ -39,10 +36,10 @@ const countController = {
       console.log(`L'événement avec l'identifiant ${eventId} est introuvable`);
       return;
     }
-
-    countController.participants.push(event.eventUsers.userId);
-    console.log(userName);
-    console.log('Creator added as participant');
+    countController.participants.push(event.userId);
+    console.log(`test 1: ${countController.participants}`);
+    console.log(`test 2: ${event.eventUsers.userId}`);
+    console.log(`'test 3: 'Le créateur ${event.userEvents.userName} de l'évènement avec l'identifiant ${eventId} est ajouté en tant que participant`);
   },
 
   addUserToEvent: async (eventId, userId) => {

@@ -154,10 +154,10 @@ const eventCtrl = {
         startingTime,
         endingTime,
       });
+      countController.startCount(newEvent.id, newEvent.creatorId);
       res.json({
         message: 'Le nouvel évènement sportif a bien été créé',
       });
-      countController.startCount(newEvent.id, newEvent.creatorId);
     } catch (error) {
       console.log(error);
       res.json({ error: error.message });
