@@ -1,16 +1,14 @@
 const jwt = require('jsonwebtoken');
 
-// Recherche du token JWT dans l'en-tête Authorization de la requête.
 const authenticateJWT = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  // On extrait le token JWT de son cookie.
+  const { token } = req.cookies;
 
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
-
-    // On regarde si le Token utilise la bonne clé secrète.
+  // Si un token a été on analyse sa validite en regardant s'il contient la bonne clé.
+  if (token) {
     jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
       if (err) {
-        // Clé secrète non vérifiée = HTTP 403 (Forbidden).
+        // Token invalide = HTTP 403 (Forbidden).
         return res.sendStatus(403);
       }
 
@@ -28,9 +26,3 @@ const authenticateJWT = (req, res, next) => {
 };
 
 module.exports = authenticateJWT;
-
-// Ce middleware peut être utilisé pour sécuriser une route de cette manière :
-
-// const authenticateJWT = require('./path/to/middleware');
-
-// router.patch('/:id', authenticateJWT, userCtrl.updateOneUser);

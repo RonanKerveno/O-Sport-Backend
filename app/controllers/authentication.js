@@ -35,10 +35,37 @@ const authController = {
         { expiresIn: '24h' },
       );
 
-      // On envoie le token dans la réponse.
-      return res.json({ token });
+      // Durée de vie du cookie en millisecondes.
+      const cookieExpiration = 24 * 60 * 60 * 1000; // 24 heures
+
+      // On envoie le token dans un cookie httpOnly avec l'expiration.
+      res.cookie('token', token, { httpOnly: true, maxAge: cookieExpiration });
+
+      // On envoie une réponse de succès.
+      return res.json({ message: 'Connexion réussie.' });
     } catch (error) {
-      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
+  },
+
+  loginInfo: async (req, res) => {
+    try {
+      // Renvoie les informations décodées du token JWT.
+      const { userId, isAdmin } = req.user;
+      return res.json({ success: true, userId, isAdmin });
+    } catch (error) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+  },
+
+  logout: async (req, res) => {
+    try {
+      // Pour supprimer le cookie coté client on l'écrase par un autre cookie qui expire de suite.
+      res.cookie('token', '', { httpOnly: true, maxAge: 0 });
+
+      // On envoie une réponse de succès.
+      return res.json({ message: 'Déconnexion réussie.' });
+    } catch (error) {
       return res.status(500).json({ error: error.message });
     }
   },
