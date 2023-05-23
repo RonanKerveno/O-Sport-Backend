@@ -51,8 +51,8 @@ const eventUsers = {
       const user = await Users.findByPk(userId);
       const event = await Events.findByPk(eventId);
 
-      eventUsers.countUsersFromOneEvent(eventId, userId);
       await user.addUserEvents(event);
+      eventUsers.countUsersFromOneEvent(eventId, userId);
       return;
     } catch (error) {
       console.log(error);
