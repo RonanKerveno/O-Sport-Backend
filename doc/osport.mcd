@@ -1,5 +1,5 @@
 AIME, 0N UTILISATEUR, 0N SPORT
-UTILISATEUR: email, is_admin, pseudo, mot de passe, nom, prénom, région, code postal, ville, rue, description
+UTILISATEUR: email, is_admin, pseudo, mot de passe, nom, prénom, date de naissance, genre, région, code postal, ville, rue, description
 :
 
 SPORT: nom
@@ -7,5 +7,5 @@ CREE, 0N UTILISATEUR, 11 EVENEMENT
 PARTICIPE, 0N UTILISATEUR, 1N EVENEMENT
 
 CONCERNE, 0N SPORT, 11 EVENEMENT
-EVENEMENT: titre, région, code postal, ville, rue, description, date de début, date de fin
+EVENEMENT: titre, région, code postal, ville, rue, description, nombre max de participants, date de début, date de fin
 :

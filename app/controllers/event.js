@@ -103,6 +103,9 @@ const eventCtrl = {
       if (!maxNbParticipants) {
         bodyErrors.push('Le nombre maximum de participants ne peut pas être vide');
       }
+      if (maxNbParticipants <= 1) {
+        bodyErrors.push('Il doit y avoir au moins deux participants à un évènement.');
+      }
       if (!startingTime) {
         bodyErrors.push('La date-heure de début ne peut pas être vide');
       }
@@ -114,6 +117,7 @@ const eventCtrl = {
         res.json({
           error: bodyErrors.join(', '),
         });
+        return;
       }
       const checkEvent = await Events.findOne({
         where: {

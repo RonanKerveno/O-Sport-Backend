@@ -334,19 +334,34 @@ const userCtrl = {
       const { userId, eventId } = req.params;
 
       const user = await Users.findByPk(userId);
-      const event = await Events.findByPk(eventId);
+      const event = await Events.findByPk(
+        eventId,
+        {
+          include: [
+            {
+              model: Users,
+              through: 'users-join-events',
+              as: 'eventUsers',
+              attributes: ['userName'],
+            },
+          ],
+        },
+      );
 
       if (!user || !event) {
         return res.status(404).json({ error: 'Utilisateur ou évènement introuvable' });
       }
-
+      // On vérifie que l'utilisateur n'est pas déjà inscrit
+      if (event.eventUsers.userId = req.params.userId) {
+        return res.json({ message: 'Utilisateur déjà inscrit!' });
+      }
       // On ajoute l'utilisateur à l'événement.
       // La méthode "addUserEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
       const maxUsers = await eventUsers.countUsersFromOneEvent(eventId, userId);
 
       if (maxUsers) {
-        return res.json({ message: 'Nombre maximum de participants atteint !' });
+        return res.json({ message: 'Nombre maximum de participants atteint!' });
       }
 
       await user.addUserEvents(event);
