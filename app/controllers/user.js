@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const emailValidator = require('email-validator');
+const { Op } = require('sequelize');
 const { Users, Events, Sports } = require('../models');
 const logger = require('../utils/logger');
 const eventUsers = require('../services/eventUsers');
@@ -89,6 +90,7 @@ const userCtrl = {
         zipCode,
         city,
         street,
+        description,
       } = req.body;
 
       // Tableau listant les erreurs rencontrées : chaque erreur est pushée.
@@ -175,6 +177,7 @@ const userCtrl = {
         zipCode,
         city,
         street,
+        description,
       });
 
       res.json({
@@ -214,6 +217,7 @@ const userCtrl = {
         zipCode,
         city,
         street,
+        description,
       } = req.body;
 
       if (firstName) user.firstName = firstName;
@@ -227,6 +231,8 @@ const userCtrl = {
       if (zipCode) user.zipCode = zipCode;
       if (city) user.city = city;
       if (street) user.street = street;
+      if (description) user.description = description;
+
       user.updateAt = new Date();
       // Sauvegarde des champs dans la BDD.
       await user.save();
@@ -326,6 +332,81 @@ const userCtrl = {
     }
   },
 
+  registriedEvents: async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      const user = await Users.findByPk(userId);
+
+      if (!user) {
+        return res.status(404).json({ error: 'Utilisateur introuvable' });
+      }
+
+      // Recherche des événements auxquels l'utilisateur participe
+      // La méthode "getUserEvents" est créée par Sequelize via les
+      // infos fournies dans les modèles.
+      const events = await user.getUserEvents({
+        where: {
+          endingTime: { [Op.lte]: new Date() },
+        },
+        include: [
+          {
+            model: Users,
+            as: 'creator',
+            attributes: ['userName'],
+          },
+          {
+            model: Sports,
+            as: 'sport',
+            attributes: ['name'],
+          },
+          {
+            model: Users,
+            as: 'eventUsers',
+            attributes: ['userName'],
+          },
+        ],
+      });
+
+      // On retourne la liste des événements
+      return res.json(events);
+    } catch (error) {
+      logger.log(error);
+      return res.status(500).json({ error: error.message });
+    }
+  },
+
+  registriedCreatedEvents: async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      const user = await Users.findByPk(userId);
+
+      if (!user) {
+        return res.status(404).json({ error: 'Utilisateur introuvable' });
+      }
+
+      // Recherche des événements créés par l'uilisateur
+      // La méthode "getCreatedEvents" est créée par Sequelize via les
+      // infos fournies dans les modèles.
+      const events = await user.getCreatedEvents({
+        where: {
+          endingTime: { [Op.lte]: new Date() },
+        },
+        include: [
+          { model: Users, as: 'creator', attributes: ['userName'] },
+          { model: Sports, as: 'sport', attributes: ['name'] },
+        ],
+      });
+
+      // On retourne la liste des événements
+      return res.json(events);
+    } catch (error) {
+      logger.log(error);
+      return res.status(500).json({ error: error.message });
+    }
+  },
+
   // Ajoute un utilisateur identifié par son ID à l’événement identifié par son ID.
   addOneUserToOneEvent: async (req, res) => {
     try {
@@ -337,6 +418,10 @@ const userCtrl = {
       const event = await Events.findByPk(
         eventId,
         {
+          where: {
+            // on exclue les évènements déjà commencés
+            startingTime: { [Op.gte]: new Date() },
+          },
           include: [
             {
               model: Users,
@@ -351,8 +436,15 @@ const userCtrl = {
       if (!user || !event) {
         return res.status(404).json({ error: 'Utilisateur ou évènement introuvable' });
       }
+
+      // Vérification si l'événement est déjà commencé ou terminé
+      const currentDateTime = new Date();
+      if (event.startingTime <= currentDateTime) {
+        return res.json({ message: 'Cet événement est déjà commencé ou terminé' });
+      }
+
       // On vérifie que l'utilisateur n'est pas déjà inscrit
-      if (event.eventUsers.userId = req.params.userId) {
+      if (event.eventUsers.userId === req.params.userId) {
         return res.json({ message: 'Utilisateur déjà inscrit!' });
       }
       // On ajoute l'utilisateur à l'événement.
@@ -427,20 +519,57 @@ const userCtrl = {
     }
   },
 
-  // Ajoute le sport identifié par son ID à l’utilisateur identifié par son ID.
+  // Ajoute le sport favori (identifié par son ID) à l’utilisateur (identifié par son ID).
   addOneSportToOneUser: async (req, res) => {
     try {
       // INSERT INTO users_like_sports (user_id, sport_id)
       // VALUES ('valeur_user_id', 'valeur_sport_id');
       const { userId, sportId } = req.params;
 
-      const user = await Users.findByPk(userId);
+      const user = await Users.findByPk(userId, {
+        include: [
+          {
+            model: Sports,
+            through: 'users_like_sports',
+            as: 'favoriteSports',
+            attributes: ['name'],
+          },
+        ],
+      });
+      const nbFavoriteSports = user.favoriteSports.length;
+      console.log('ArrayCount : ', JSON.stringify(user, null, 2));
+      console.log(`nb de sports favoris : ${nbFavoriteSports}`);
+
       const sport = await Sports.findByPk(sportId);
 
       if (!user || !sport) {
         return res.status(404).json({ error: 'Utilisateur ou sport introuvable' });
       }
 
+      // On vérifie que l'utilisateur n'a pas déjà ce sport en favori
+
+      console.log(req.params.sportId);
+      // if (user.favoriteSports.sportId === req.params.sportId) {
+      //  return res.json({ message: 'Sport favori déjà choisi!' });
+      // }
+
+      if (nbFavoriteSports >= 5) {
+        return res.json({ message: 'Vous avez atteint le nombre maximum de sports favoris déclarés' });
+      }
+
+      // L'utilisateur ne peut ajouter qu'une fois le même sport
+      // favori : message d'erreur par défaut
+      let isFavoriteSportChosen = false;
+
+      user.favoriteSports.forEach((favoriteSport) => {
+        if (favoriteSport.users_like_sports.sportId === parseInt(req.params.sportId, 10)) {
+          isFavoriteSportChosen = true;
+        }
+      });
+
+      if (isFavoriteSportChosen) {
+        return res.json({ message: 'Sport favori déjà choisi!' });
+      }
       // Ajout du sport aux favoris de l'utilisateur.
       // La méthode "addFavoriteSport" est créée par Sequelize via les
       // infos fournies dans les modèles.

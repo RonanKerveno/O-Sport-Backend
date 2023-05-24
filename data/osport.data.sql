@@ -18,8 +18,8 @@ VALUES
     
 INSERT INTO "events" ("id", "creator_id", "sport_id", "title", "region", "zip_code", "city", "street", "description", "max_nb_participants", "starting_time", "ending_time", "created_at", "updated_at")
 VALUES
-    (1, 1, 2, 'Randonnée vélo à Paris', 'Île-de-France', '75015', 'Paris', 'Parc de la Villette', 'Hello, je propose une randonnée en vélo dans Paris !', 10, '2023-05-10 10:00:00', '2023-05-10 18:00:00', '05/05/2023 10:00:00', '07/05/2023 08:00:00'),   
-    (2, 2, 1, 'Petit tennis entre amis à Perpignan', 'Occitanie', '66000', 'Perpignan', '12 rue des Sports', 'Salut, un petit tennis ça vous tente ?', 6, '2023-04-10 10:00:00', '2023-04-10 18:00:00', '05/05/2023 10:00:00', '07/05/2023 08:00:00' );
+    (1, 1, 2, 'Randonnée vélo à Paris', 'Île-de-France', '75015', 'Paris', 'Parc de la Villette', 'Hello, je propose une randonnée en vélo dans Paris !', 10, '2023-06-01 10:00:00', '2023-06-02 18:00:00', '2023/05/05 10:00:00', '2023/05/07 08:00:00'),   
+    (2, 2, 1, 'Petit tennis entre amis à Perpignan', 'Occitanie', '66000', 'Perpignan', '12 rue des Sports', 'Salut, un petit tennis ça vous tente ?', 6, '2023-06-10 10:00:00', '2023-06-10 18:00:00', '2023/05/05 10:00:00', '2023/05/07 08:00:00' );
 
 INSERT INTO "users_join_events" ("event_id", "user_id")
 VALUES

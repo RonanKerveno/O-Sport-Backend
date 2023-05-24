@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { Events, Users, Sports } = require('../models');
 const eventUsers = require('../services/eventUsers');
 
@@ -8,6 +9,10 @@ const eventCtrl = {
       // SELECT * FROM sports;
       const events = await Events.findAll({
         attributes: { exclude: ['description'] },
+        where: {
+          // on exclue les évènements déjà terminés
+          endingTime: { [Op.gte]: new Date() },
+        },
         include: [
           {
             model: Users,
@@ -32,30 +37,32 @@ const eventCtrl = {
 
     try {
       // SELECT * FROM sports WHERE id = $1;
-      const event = await Events.findByPk(
-        eventId,
-        {
-          include: [
-            {
-              model: Users,
-              as: 'creator',
-              attributes: ['userName'],
-            },
-            {
-              model: Sports,
-              as: 'sport',
-              attributes: ['name'],
-            },
-            {
-              model: Users,
-              through: 'users-join-events',
-              as: 'eventUsers',
-              attributes: ['userName'],
-            },
-          ],
+      const event = await Events.findOne({
+        // on exclue les évènements déjà terminés
+        where: {
+          id: eventId,
+          endingTime: {
+            [Op.gte]: new Date(),
+          },
         },
-      );
-
+        include: [
+          {
+            model: Users,
+            as: 'creator',
+          },
+          {
+            model: Sports,
+            as: 'sport',
+            attributes: ['name'],
+          },
+          {
+            model: Users,
+            through: 'users-join-events',
+            as: 'eventUsers',
+            attributes: ['userName'],
+          },
+        ],
+      });
       if (!event) {
         res.status(404).json('Evènement introuvable');
       } else {
@@ -103,14 +110,20 @@ const eventCtrl = {
       if (!maxNbParticipants) {
         bodyErrors.push('Le nombre maximum de participants ne peut pas être vide');
       }
-      if (maxNbParticipants <= 1) {
+      if (maxNbParticipants <= 1 || maxNbParticipants > 50) {
         bodyErrors.push('Il doit y avoir au moins deux participants à un évènement.');
       }
       if (!startingTime) {
         bodyErrors.push('La date-heure de début ne peut pas être vide');
       }
+      if (new Date(startingTime).getTime() <= Date.now()) {
+        bodyErrors.push("La date-heure de début ne peut pas être antérieure à la création de l'événement.");
+      }
       if (!endingTime) {
         bodyErrors.push('La date-heure de fin ne peut pas être vide');
+      }
+      if (new Date(endingTime).getTime() - new Date(startingTime).getTime() < 30 * 60000) {
+        bodyErrors.push("La durée de l'évènement sportif doit être d'au moins 30 minutes");
       }
 
       if (bodyErrors.length > 0) {

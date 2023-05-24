@@ -55,4 +55,17 @@ CREATE TABLE "users_like_sports" (
     "sport_id"  INTEGER NOT NULL REFERENCES "sports"("id") ON DELETE CASCADE
 );
 
+ALTER TABLE "events"
+    ADD CONSTRAINT "limit_participants" CHECK ("max_nb_participants" >= 2 AND "max_nb_participants" <= 50);
+
+ALTER TABLE "events"
+    ADD CONSTRAINT "event_time" CHECK ("ending_time" >= "starting_time" + '30 minutes');
+
+ALTER TABLE "events"
+    ADD CONSTRAINT "event_creation_time" CHECK ("created_at" < "starting_time");
+
+ALTER TABLE "users"
+    ADD CONSTRAINT "birth" CHECK ("date_of_birth" < (NOW()));
+
+
 COMMIT;
