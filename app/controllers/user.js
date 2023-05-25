@@ -132,6 +132,9 @@ const userCtrl = {
       if (!favoriteSports || !Array.isArray(favoriteSports) || favoriteSports.length === 0) {
         bodyErrors.push('Au moins un sport doit être sélectionné');
       }
+      if (favoriteSports.length > 5) {
+        bodyErrors.push('Vous ne pouvez pas choisir plus de 5 sports');
+      }
 
       // Tableau non vide = erreur(s) rencontrée(s).
       if (bodyErrors.length > 0) {
@@ -252,6 +255,9 @@ const userCtrl = {
       if (favoriteSports && Array.isArray(favoriteSports)) {
         if (favoriteSports.length === 0) {
           return res.status(400).json({ error: 'Au moins un sport doit être sélectionné' });
+        }
+        if (favoriteSports.length > 5) {
+          return res.status(400).json({ error: 'Vous ne pouvez pas choisir plus de 5 sports' });
         }
 
         const favoriteSportsIds = favoriteSports.map((sport) => sport.id);
