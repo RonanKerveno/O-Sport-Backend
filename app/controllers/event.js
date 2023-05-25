@@ -5,6 +5,13 @@ const location = require('../services/location');
 
 const eventCtrl = {
 
+  /**
+ * Retrieves all upcoming events.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the list of events or an error message.
+ */
   getAllEvents: async (req, res) => {
     try {
       // SELECT * FROM sports;
@@ -33,6 +40,13 @@ const eventCtrl = {
     }
   },
 
+  /**
+ * Retrieves a single event by its ID.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the event details or an error message.
+ */
   getOneEvent: async (req, res) => {
     const eventId = req.params.id;
 
@@ -74,9 +88,30 @@ const eventCtrl = {
     }
   },
 
+  /**
+ * Creates a new event.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.body - The data provided in the request body.
+ * @param {integer} req.body.sportId - The sportId of the sport.
+ * @param {string} req.body.title - The title of the event.
+ * @param {string} req.body.region - The region of the event.
+ * @param {number} req.body.zipCode - The ZIP code of the event.
+ * @param {string} req.body.city - The city of the event.
+ * @param {string} req.body.street - The street of the event.
+ * @param {string} req.body.description - The description of the event.
+ * @param {number} req.body.maxNbParticipants - The maximum number of participants.
+ * @param {timestamptz} req.body.startingTime - The starting time of the event.
+ * @param {timestamptz} req.body.endingTime - The ending time of the event.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the
+ * new event is created and sent in the response.
+ */
   createOneEvent: async (req, res) => {
     try {
+      // test service location
       location.getAllRegions();
+      // début méthode
       const {
         sportId,
         title,
@@ -184,6 +219,25 @@ const eventCtrl = {
     }
   },
 
+  /**
+ * Updates an existing event.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.body - The data provided in the request body.
+ * @param {integer} req.body.sportId - The updated sportId  of the sport.
+ * @param {string} req.body.title - The updated title of the event.
+ * @param {string} req.body.region - The updated region of the event.
+ * @param {number} req.body.zipCode - The updated ZIP code of the event.
+ * @param {string} req.body.city - The updated city of the event.
+ * @param {string} req.body.street - The updated treet of the event.
+ * @param {string} req.body.description - The updated description of the event.
+ * @param {number} req.body.maxNbParticipants - The updated maximum number of participants.
+ * @param {timestamptz} req.body.startingTime - The updated starting time of the event.
+ * @param {timestamptz} req.body.endingTime - The updated ending time of the event.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the
+ * new event is updated.
+ */
   updateEvent: async (req, res) => {
     try {
       const eventId = req.params.id;
@@ -234,7 +288,13 @@ const eventCtrl = {
     }
   },
 
-  // Supprime un event ciblé par l’ID.
+  /**
+ * Deletes an event.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with a success message or an error message.
+ */
   deleteEvent: async (req, res) => {
     try {
       const eventId = req.params.id;

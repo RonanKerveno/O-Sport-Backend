@@ -1,7 +1,13 @@
 const { Users, Sports, Events } = require('../models');
 
 const sportCtrl = {
-
+/**
+ * Retrieves all sports.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with an array of sports or an error message.
+ */
   getAllSports: async (req, res) => {
     try {
       // SELECT * FROM sports;
@@ -14,6 +20,13 @@ const sportCtrl = {
     }
   },
 
+  /**
+ * Retrieves a specific sport by its ID.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the sport or an error message.
+ */
   getOneSport: async (req, res) => {
     const sportId = req.params.id;
 
@@ -46,6 +59,13 @@ const sportCtrl = {
     }
   },
 
+  /**
+ * Creates a new sport (only for admin users).
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with a success message or an error.
+ */
   createOneSport: async (req, res) => {
     if (req.user.isAdmin) {
       try {
@@ -86,6 +106,13 @@ const sportCtrl = {
     }
   },
 
+  /**
+ * Updates a sport (only for admin users).
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the updated sport or an error.
+ */
   updateOneSport: async (req, res) => {
     if (req.user.isAdmin) {
       try {
@@ -115,6 +142,13 @@ const sportCtrl = {
     }
   },
 
+  /**
+ * Deletes a sport (only for admin users).
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with a success message or an error.
+ */
   deleteOneSport: async (req, res) => {
     if (req.user.isAdmin) {
       try {

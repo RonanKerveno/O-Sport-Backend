@@ -7,7 +7,13 @@ const eventUsers = require('../services/eventUsers');
 
 const userCtrl = {
 
-  // Récupère tous les utilisateurs.
+  /**
+ * Retrieves all users with their associated favorite sports.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the list of users.
+ */
   getAllUsers: async (req, res) => {
     try {
       // SELECT id, isAdmin, userName, region, city, description FROM users;
@@ -27,7 +33,13 @@ const userCtrl = {
     }
   },
 
-  // Récupère l’utilisateur ciblé par l’ID.
+  /**
+ * Retrieves a specific user by their ID, including their associated favorite sports.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the user data or an error message.
+ */
   getOneUser: async (req, res) => {
     const { userId } = req.params;
 
@@ -53,7 +65,13 @@ const userCtrl = {
     }
   },
 
-  // Récupère l’utilisateur ciblé par l’ID et ses informations privées.
+  /**
+ * Retrieves private information of a specific user by their ID.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the user data or an error message.
+ */
   getOneUserPrivate: async (req, res) => {
     const { userId } = req.params;
 
@@ -73,7 +91,29 @@ const userCtrl = {
     }
   },
 
-  // Crée un nouvel utilisateur.
+  /**
+ * Creates a new user.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.body - The data provided in the request body.
+ * @param {string} req.body.firstName - The first name of the user.
+ * @param {string} req.body.lastName - The last name of the user.
+ * @param {string} req.body.userName - The username of the user.
+ * @param {boolean} req.body.isAdmin - Indicates if the user is an administrator. (default: false)
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.password - The password of the user.
+ * @param {date} req.body.dateOfBirth - The date of birth of the user.
+ * @param {string} req.body.gender - The gender of the user.
+ * @param {string} req.body.region - The region of the user.
+ * @param {number} req.body.zipCode - The ZIP code of the user.
+ * @param {string} req.body.city - The city of the user.
+ * @param {string} req.body.street - The street of the user.
+ * @param {string} req.body.description - The description of the user.
+ * @param {Array} req.body.favoriteSports - An array of favorite sports for the user.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the
+ * new user is created and sent in the response.
+ */
   createOneUser: async (req, res) => {
     try {
       // Récupération des variables du body request.
@@ -206,7 +246,30 @@ const userCtrl = {
     }
   },
 
-  // Mise à jour des informations de l’utilisateur ciblé par l’ID.
+  /**
+ * Updates the profile of a user.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {integer} req.params.userId - The ID of the user to update.
+ * @param {object} req.body - The data provided in the request body for updating the user profile.
+ * @param {string} req.body.firstName - The updated first name of the user.
+ * @param {string} req.body.lastName - The updated last name of the user.
+ * @param {string} req.body.userName - The updated username of the user.
+ * @param {string} req.body.email - The updated email of the user.
+ * @param {string} req.body.password - The updated password of the user.
+ * @param {date} req.body.dateOfBirth - The updated date of birth of the user.
+ * @param {string} req.body.gender - The updated gender of the user.
+ * @param {string} req.body.region - The updated region of the user.
+ * @param {number} req.body.zipCode - The updated ZIP code of the user.
+ * @param {string} req.body.city - The updated city of the user.
+ * @param {string} req.body.street - The updated street of the user.
+ * @param {string} req.body.description - The updated description of the user.
+ * @param {Array} req.body.favoriteSports - The updated array of favorite sports for the user.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the
+ * user profile is updated and sent in the response.
+ */
   updateOneUser: async (req, res) => {
     try {
       const { userId } = req.params;
@@ -281,7 +344,16 @@ const userCtrl = {
     }
   },
 
-  // Supprime un utilisateur ciblé par l’ID.
+  /**
+ * Delete a user.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {integer} req.params.userId - The ID of the user to delete.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the
+ * user is deleted and a success message is sent in the response.
+ */
   deleteOneUser: async (req, res) => {
     try {
       // DELETE FROM users
@@ -300,7 +372,15 @@ const userCtrl = {
     }
   },
 
-  // Récupère la liste des événements auxquels un utilisateur ayant l’ID spécifié participe.
+  /**
+ * Retrieves all events from a user.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {string} req.params.userId - The ID of the user to retrieve events from.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} events with creator, sport and participants
+ */
   getAllEventsFromOneUser: async (req, res) => {
     try {
       const { userId } = req.params;
@@ -342,7 +422,15 @@ const userCtrl = {
     }
   },
 
-  // Récupère la liste des événements créés par un utilisateur ayant l’ID spécifié.
+  /**
+ * Retrieves all events created by a user.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {string} req.params.userId - The ID of the user to retrieve events created by.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} the event, the creator (username) and sport
+ */
   getAllEventsCreatedByOneUser: async (req, res) => {
     try {
       const { userId } = req.params;
@@ -371,6 +459,15 @@ const userCtrl = {
     }
   },
 
+  /**
+ * Retrieves the registered events for a user.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {string} req.params.userId - The ID of the user to retrieve registered events for.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} past events from one user
+ */
   getRegistriedEvents: async (req, res) => {
     try {
       const { userId } = req.params;
@@ -415,6 +512,15 @@ const userCtrl = {
     }
   },
 
+  /**
+ * Retrieves the registered events created by a user.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {string} req.params.userId - The ID of the user to retrieve registered events created by.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} past created events form one user
+ */
   getRegistriedCreatedEvents: async (req, res) => {
     try {
       const { userId } = req.params;
@@ -446,7 +552,16 @@ const userCtrl = {
     }
   },
 
-  // Ajoute un utilisateur identifié par son ID à l’événement identifié par son ID.
+  /**
+ * Adds a user to an event.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {string} req.params.userId - The ID of the user to add.
+ * @param {string} req.params.eventId - The ID of the event to add the user to.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the user is added to the event.
+ */
   addOneUserToOneEvent: async (req, res) => {
     try {
       // INSERT INTO users_join_events (user_id, event_id)
@@ -504,7 +619,16 @@ const userCtrl = {
     }
   },
 
-  // Supprime un utilisateur identifié par son ID de l’événement identifié par son ID.
+  /**
+ * Deletes a user from an event.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {string} req.params.userId - The ID of the user to delete.
+ * @param {string} req.params.eventId - The ID of the event to delete the user from.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the user is deleted from the event.
+ */
   deleteOneUserFromOneEvent: async (req, res) => {
     try {
       // DELETE FROM users_join_events
@@ -530,7 +654,15 @@ const userCtrl = {
     }
   },
 
-  // Récupère la liste des sports préférés d'un utilisateur ciblé par son ID.
+  /**
+ * Retrieves all favorite sports from a user.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {string} req.params.userId - The ID of the user.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the list of favorite sports.
+ */
   getAllSportsFromOneUser: async (req, res) => {
     try {
       // SELECT name
@@ -558,7 +690,16 @@ const userCtrl = {
     }
   },
 
-  // Ajoute le sport favori (identifié par son ID) à l’utilisateur (identifié par son ID).
+  /**
+ * Adds a sport to a user's favorite sports.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {string} req.params.userId - The ID of the user.
+ * @param {string} req.params.sportId - The ID of the sport.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with a success message.
+ */
   addOneSportToOneUser: async (req, res) => {
     try {
       // INSERT INTO users_like_sports (user_id, sport_id)
@@ -621,7 +762,16 @@ const userCtrl = {
     }
   },
 
-  // Supprime le sport favori identifié par son ID à l’utilisateur identifié par son ID.
+  /**
+ * Deletes a sport from a user's favorite sports.
+ *
+ * @param {object} req - The request object.
+ * @param {object} req.params - The parameters extracted from the request.
+ * @param {string} req.params.userId - The ID of the user.
+ * @param {string} req.params.sportId - The ID of the sport.
+ * @param {object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with a success message.
+ */
   deleteOneSportToOneUser: async (req, res) => {
     try {
       // DELETE FROM users_like_sports
