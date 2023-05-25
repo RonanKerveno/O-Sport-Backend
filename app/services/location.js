@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const localisation = {
+const location = {
   fetchOptions: {
     method: 'GET',
     mode: 'cors',
@@ -64,4 +64,4 @@ const localisation = {
   // curl 'https://geo.api.gouv.fr/communes?codePostal=78000'
 };
 
-module.exports = localisation;
+module.exports = location;

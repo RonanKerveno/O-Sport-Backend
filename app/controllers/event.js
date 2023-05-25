@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const { Events, Users, Sports } = require('../models');
 const eventUsers = require('../services/eventUsers');
-const localisation = require('../services/localisation');
+const location = require('../services/location');
 
 const eventCtrl = {
 
@@ -76,7 +76,7 @@ const eventCtrl = {
 
   createOneEvent: async (req, res) => {
     try {
-      localisation.getAllRegions();
+      location.getAllRegions();
       const {
         sportId,
         title,
