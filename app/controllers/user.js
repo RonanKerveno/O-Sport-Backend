@@ -83,7 +83,6 @@ const userCtrl = {
         userName,
         email,
         password,
-        passwordConfirm,
         dateOfBirth,
         gender,
         region,
@@ -91,6 +90,7 @@ const userCtrl = {
         city,
         street,
         description,
+        favoriteSports,
       } = req.body;
 
       // Tableau listant les erreurs rencontrées : chaque erreur est pushée.
@@ -98,9 +98,6 @@ const userCtrl = {
 
       if (!emailValidator.validate(email)) {
         bodyErrors.push('Email invalide');
-      }
-      if (password !== passwordConfirm) {
-        bodyErrors.push('Le mot de passe ne correspond pas');
       }
       if (!firstName) {
         bodyErrors.push('Le prénom ne peut pas être vide');
@@ -131,6 +128,12 @@ const userCtrl = {
       }
       if (!street) {
         bodyErrors.push('La rue ne peut pas être vide');
+      }
+      if (!favoriteSports || !Array.isArray(favoriteSports) || favoriteSports.length === 0) {
+        bodyErrors.push('Au moins un sport doit être sélectionné');
+      }
+      if (favoriteSports.length > 5) {
+        bodyErrors.push('Vous ne pouvez pas choisir plus de 5 sports');
       }
 
       // Tableau non vide = erreur(s) rencontrée(s).
@@ -164,7 +167,7 @@ const userCtrl = {
       // 'valeur_date_of_birth', 'valeur_gender',
       // 'valeur_region', 'valeur_zip_code', 'valeur_city', 'valeur_street');
       // Création de l'utilisateur avec les champs recquis.
-      await Users.create({
+      const newUser = await Users.create({
         firstName,
         lastName,
         userName,
@@ -180,8 +183,22 @@ const userCtrl = {
         description,
       });
 
+      // Ajout des sports favoris
+      const favoriteSportsIds = favoriteSports.map((sport) => sport.id);
+      await newUser.addFavoriteSports(favoriteSportsIds);
+
+      // Récupération des sports favoris de l'utilisateur pour la réponse
+      const userWithSports = await Users.findByPk(newUser.id, {
+        include: {
+          model: Sports,
+          as: 'favoriteSports',
+          attributes: ['id', 'name'],
+        },
+      });
+
       res.json({
         message: 'Vous pouvez maintenant vous connecter !',
+        user: userWithSports,
       });
     } catch (error) {
       logger.log(error);
@@ -218,6 +235,7 @@ const userCtrl = {
         city,
         street,
         description,
+        favoriteSports,
       } = req.body;
 
       if (firstName) user.firstName = firstName;
@@ -233,10 +251,31 @@ const userCtrl = {
       if (street) user.street = street;
       if (description) user.description = description;
 
-      user.updateAt = new Date();
-      // Sauvegarde des champs dans la BDD.
+      // Ajout des sports favoris
+      if (favoriteSports && Array.isArray(favoriteSports)) {
+        if (favoriteSports.length === 0) {
+          return res.status(400).json({ error: 'Au moins un sport doit être sélectionné' });
+        }
+        if (favoriteSports.length > 5) {
+          return res.status(400).json({ error: 'Vous ne pouvez pas choisir plus de 5 sports' });
+        }
+
+        const favoriteSportsIds = favoriteSports.map((sport) => sport.id);
+        await user.setFavoriteSports(favoriteSportsIds);
+      }
+
       await user.save();
-      return res.json(user);
+
+      // Récupération des sports favoris de l'utilisateur pour la réponse
+      const updatedUser = await Users.findByPk(userId, {
+        include: {
+          model: Sports,
+          as: 'favoriteSports',
+          attributes: ['id', 'name'],
+        },
+      });
+
+      return res.json(updatedUser);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
