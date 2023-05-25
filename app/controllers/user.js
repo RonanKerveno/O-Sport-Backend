@@ -332,7 +332,7 @@ const userCtrl = {
     }
   },
 
-  registriedEvents: async (req, res) => {
+  getRegistriedEvents: async (req, res) => {
     try {
       const { userId } = req.params;
 
@@ -376,7 +376,7 @@ const userCtrl = {
     }
   },
 
-  registriedCreatedEvents: async (req, res) => {
+  getRegistriedCreatedEvents: async (req, res) => {
     try {
       const { userId } = req.params;
 
