@@ -25,9 +25,9 @@ router.get('/:userId/events', userCtrl.getAllEventsFromOneUser);
 // récupère la liste des événements créés par l'utilisateur ayant l’ID spécifié.
 router.get('/:userId/created-events', userCtrl.getAllEventsCreatedByOneUser);
 // récupère la liste des évènements archivés auxquels l'utilisateur a participé
-router.get('/:userId/registried-events', userCtrl.registriedEvents);
+router.get('/:userId/registried-events', userCtrl.getRegistriedEvents);
 // récupère la liste des événements créés par l'utilisateur ayant l’ID spécifié et archivés.
-router.get('/:userId/registried-created-events', userCtrl.registriedCreatedEvents);
+router.get('/:userId/registried-created-events', userCtrl.getRegistriedCreatedEvents);
 // ajoute un utilisateur identifié par son ID à l’événement identifié par son ID.
 router.post('/:userId/events/:eventId', authorized, userCtrl.addOneUserToOneEvent);
 // supprime un utilisateur identifié par son ID de l’événement identifié par son ID.
