@@ -365,6 +365,14 @@ const userCtrl = {
         return res.status(404).send(`Utilisateur avec l'identifiant  ${userId} introuvable`);
       }
       await user.destroy();
+
+      // Suppression du cookie d'authentification
+      let cookieOptions = { httpOnly: true, maxAge: 0 };
+      if (process.env.NODE_ENV === 'production') {
+        cookieOptions = { ...cookieOptions, secure: true, sameSite: 'none' };
+      }
+      res.cookie('token', '', cookieOptions);
+
       return res.json({ message: `L'utilisateur avec l'identifiant ${userId} vient d'être supprimé` });
     } catch (error) {
       logger.log(error);
