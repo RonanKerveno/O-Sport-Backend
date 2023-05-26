@@ -93,7 +93,7 @@ const eventCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.body - The data provided in the request body.
- * @param {integer} req.body.sportId - The sportId of the sport.
+ * @param {number} req.body.sportId - The sportId of the sport.
  * @param {string} req.body.title - The title of the event.
  * @param {string} req.body.region - The region of the event.
  * @param {number} req.body.zipCode - The ZIP code of the event.
@@ -224,7 +224,7 @@ const eventCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.body - The data provided in the request body.
- * @param {integer} req.body.sportId - The updated sportId  of the sport.
+ * @param {number} req.body.sportId - The updated sportId  of the sport.
  * @param {string} req.body.title - The updated title of the event.
  * @param {string} req.body.region - The updated region of the event.
  * @param {number} req.body.zipCode - The updated ZIP code of the event.
