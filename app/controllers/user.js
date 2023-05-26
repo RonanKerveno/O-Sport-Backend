@@ -251,7 +251,7 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {integer} req.params.userId - The ID of the user to update.
+ * @param {number} req.params.userId - The ID of the user to update.
  * @param {object} req.body - The data provided in the request body for updating the user profile.
  * @param {string} req.body.firstName - The updated first name of the user.
  * @param {string} req.body.lastName - The updated last name of the user.
@@ -349,7 +349,7 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {integer} req.params.userId - The ID of the user to delete.
+ * @param {number} req.params.userId - The ID of the user to delete.
  * @param {object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves once the
  * user is deleted and a success message is sent in the response.
@@ -385,7 +385,7 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {string} req.params.userId - The ID of the user to retrieve events from.
+ * @param {number} req.params.userId - The ID of the user to retrieve events from.
  * @param {object} res - The response object.
  * @returns {Promise<void>} events with creator, sport and participants
  */
@@ -435,7 +435,7 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {string} req.params.userId - The ID of the user to retrieve events created by.
+ * @param {number} req.params.userId - The ID of the user to retrieve events created by.
  * @param {object} res - The response object.
  * @returns {Promise<void>} the event, the creator (username) and sport
  */
@@ -472,11 +472,11 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {string} req.params.userId - The ID of the user to retrieve registered events for.
+ * @param {number} req.params.userId - The ID of the user to retrieve registered events for.
  * @param {object} res - The response object.
  * @returns {Promise<void>} past events from one user
  */
-  getRegistriedEvents: async (req, res) => {
+  getRegistriedEventsFromOneUser: async (req, res) => {
     try {
       const { userId } = req.params;
 
@@ -525,11 +525,11 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {string} req.params.userId - The ID of the user to retrieve registered events created by.
+ * @param {number} req.params.userId - The ID of the user to retrieve registered events created by.
  * @param {object} res - The response object.
  * @returns {Promise<void>} past created events form one user
  */
-  getRegistriedCreatedEvents: async (req, res) => {
+  getRegistriedCreatedEventsFromOneUser: async (req, res) => {
     try {
       const { userId } = req.params;
 
@@ -565,8 +565,8 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {string} req.params.userId - The ID of the user to add.
- * @param {string} req.params.eventId - The ID of the event to add the user to.
+ * @param {number} req.params.userId - The ID of the user to add.
+ * @param {number} req.params.eventId - The ID of the event to add the user to.
  * @param {object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves once the user is added to the event.
  */
@@ -632,8 +632,8 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {string} req.params.userId - The ID of the user to delete.
- * @param {string} req.params.eventId - The ID of the event to delete the user from.
+ * @param {number} req.params.userId - The ID of the user to delete.
+ * @param {number} req.params.eventId - The ID of the event to delete the user from.
  * @param {object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves once the user is deleted from the event.
  */
@@ -667,7 +667,7 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {string} req.params.userId - The ID of the user.
+ * @param {number} req.params.userId - The ID of the user.
  * @param {object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with the list of favorite sports.
  */
@@ -703,8 +703,8 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {string} req.params.userId - The ID of the user.
- * @param {string} req.params.sportId - The ID of the sport.
+ * @param {number} req.params.userId - The ID of the user.
+ * @param {number} req.params.sportId - The ID of the sport.
  * @param {object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with a success message.
  */
@@ -775,8 +775,8 @@ const userCtrl = {
  *
  * @param {object} req - The request object.
  * @param {object} req.params - The parameters extracted from the request.
- * @param {string} req.params.userId - The ID of the user.
- * @param {string} req.params.sportId - The ID of the sport.
+ * @param {number} req.params.userId - The ID of the user.
+ * @param {number} req.params.sportId - The ID of the sport.
  * @param {object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with a success message.
  */

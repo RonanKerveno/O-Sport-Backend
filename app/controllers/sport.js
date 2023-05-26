@@ -63,6 +63,8 @@ const sportCtrl = {
  * Creates a new sport (only for admin users).
  *
  * @param {object} req - The request object.
+ * @param {object} req.body - The data provided in the request body.
+ * @param {string} req.body.name - The name of the created sport.
  * @param {object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with a success message or an error.
  */
@@ -110,6 +112,8 @@ const sportCtrl = {
  * Updates a sport (only for admin users).
  *
  * @param {object} req - The request object.
+ * @param {object} req.body - The data provided in the request body.
+ * @param {string} req.body.name - The name of the updated sport.
  * @param {object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with the updated sport or an error.
  */
