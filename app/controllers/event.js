@@ -69,6 +69,7 @@ const eventCtrl = {
           {
             model: Users,
             as: 'creator',
+            attributes: ['userName'],
           },
           {
             model: Sports,
