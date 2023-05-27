@@ -98,7 +98,6 @@ const sportCtrl = {
           message: 'Le nouveau sport a bien été créé',
         });
       } catch (error) {
-        console.log(error);
         res.json({ error: error.message });
       }
     } else {
@@ -128,7 +127,9 @@ const sportCtrl = {
         } else {
           const { name } = req.body;
 
-          if ({ name }) sport.name = name;
+          if (name) {
+            sport.name = name;
+          }
 
           // Sauvegarde des champs dans la BDD.
           // UPDATE sports SET name = 'nouveau_nom' WHERE id = 'sport_id';
@@ -136,7 +137,6 @@ const sportCtrl = {
           res.json(sport);
         }
       } catch (error) {
-        console.log(error);
         res.status(500).json({ error: error.message });
       }
     } else {
@@ -167,7 +167,6 @@ const sportCtrl = {
           res.json({ message: `Le sport avec l'identifiant ${sportId} vient d'être supprimé` });
         }
       } catch (error) {
-        console.log(error);
         res.status(500).json({ error: error.message });
       }
     } else {

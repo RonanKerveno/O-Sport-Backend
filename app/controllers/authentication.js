@@ -3,17 +3,17 @@ const bcrypt = require('bcrypt');
 const { Users } = require('../models');
 
 const authController = {
-/**
- * Login function for user authentication (token and cookie).
- *
- * @param {Object} req - The request object.
- * @param {Object} req.body - The request body.
- * @param {string} req.body.email - The email of the user.
- * @param {string} req.body.password - The password of the user.
- * @param {Object} res - The response object.
- * @returns {Object} The response JSON object.
- * @throws {Object} If an error occurs during the login process, it returns an error JSON object.
- */
+  /**
+   * Login function for user authentication (token and cookie).
+   *
+   * @param {Object} req - The request object.
+   * @param {Object} req.body - The request body.
+   * @param {string} req.body.email - The email of the user.
+   * @param {string} req.body.password - The password of the user.
+   * @param {Object} res - The response object.
+   * @returns {Object} The response JSON object.
+   * @throws {Object} If an error occurs during the login process, it returns an error JSON object.
+   */
   login: async (req, res) => {
     try {
       // Récupération des informations d'identification de l'utilisateur.
@@ -78,12 +78,27 @@ const authController = {
  * information, it returns an error JSON object.
  */
   loginInfo: async (req, res) => {
-    try {
-      // Renvoie les informations décodées du token JWT.
-      const { userId, isAdmin } = req.user;
-      return res.json({ success: true, userId, isAdmin });
-    } catch (error) {
-      return res.status(500).json({ success: false, error: error.message });
+    const { token } = req.cookies;
+
+    if (token) {
+      try {
+        const user = await new Promise((resolve, reject) => {
+          jwt.verify(token, process.env.SECRET_KEY, (err, decodedUser) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(decodedUser);
+            }
+          });
+        });
+
+        const { userId, isAdmin } = user;
+        return res.json({ success: true, userId, isAdmin });
+      } catch (error) {
+        return res.status(200).json({ success: false, message: 'Aucun utilisateur connecté' });
+      }
+    } else {
+      return res.status(200).json({ success: false, message: 'Aucun utilisateur connecté' });
     }
   },
   /**

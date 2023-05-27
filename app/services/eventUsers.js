@@ -43,13 +43,10 @@ const eventUsers = {
       },
     );
 
-    console.log('ArrayCount : ', JSON.stringify(event, null, 2));
     // Récupération du nombre max de participants à cet evt
     const maxPart = event.maxNbParticipants;
-    console.log(`nb max de participants : ${maxPart}`);
     // Récupération du nombre de participants déjà inscrits à l'instant même
     const nbUsers = event.eventUsers.length;
-    console.log('Compteur : ', nbUsers);
 
     if (nbUsers >= maxPart) {
       return true;

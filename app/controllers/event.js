@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const { Events, Users, Sports } = require('../models');
 const eventUsers = require('../services/eventUsers');
-const location = require('../services/location');
+// const location = require('../services/location');
 
 const eventCtrl = {
 
@@ -31,6 +31,11 @@ const eventCtrl = {
             model: Sports,
             as: 'sport',
             attributes: ['name'],
+          },
+          {
+            model: Users,
+            as: 'eventUsers',
+            attributes: ['id', 'userName'],
           },
         ],
       });
@@ -72,9 +77,8 @@ const eventCtrl = {
           },
           {
             model: Users,
-            through: 'users-join-events',
             as: 'eventUsers',
-            attributes: ['userName'],
+            attributes: ['id', 'userName'],
           },
         ],
       });
@@ -110,7 +114,7 @@ const eventCtrl = {
   createOneEvent: async (req, res) => {
     try {
       // test service location
-      location.getAllRegions();
+      // location.getAllRegions();
       // début méthode
       const {
         sportId,
@@ -214,7 +218,6 @@ const eventCtrl = {
         message: 'Le nouvel évènement sportif a bien été créé',
       });
     } catch (error) {
-      console.log(error);
       res.json({ error: error.message });
     }
   },
@@ -244,47 +247,49 @@ const eventCtrl = {
       const event = await Events.findByPk(eventId);
 
       if (!event) {
-        res.status(404).send(`L'évènement avec l'identifiant ${eventId} est introuvable`);
-      } else {
-        const {
-          title,
-          region,
-          zipCode,
-          city,
-          street,
-          description,
-          maxNbParticipants,
-          startingTime,
-          endingTime,
-        } = req.body;
-
-        if (title) event.title = title;
-        if (region) event.region = region;
-        if (zipCode) event.zipCode = zipCode;
-        if (city) event.city = city;
-        if (street) event.street = street;
-        if (description) event.description = description;
-        if (maxNbParticipants) event.maxNbParticipants = maxNbParticipants;
-        if (startingTime) event.startingTime = startingTime;
-        if (endingTime) event.endingTime = endingTime;
-
-        // Sauvegarde des champs dans la BDD.
-        // UPDATE events
-        // SET title = 'valeur_title', region = 'valeur_region',
-        // zip_code = 'valeur_zip_code', city = 'valeur_city',
-        // street = 'valeur_street', description = 'valeur_description',
-        // maxNbParticipants = 'maxNbParticipants',
-        // starting_time = 'valeur_starting_time',
-        // ending_time = 'valeur_ending_time',
-        // created_at = 'valeur_created_at',
-        // updated_at = 'valeur_updated_at'
-        // WHERE id = 'valeur_event.id';
-        await event.save();
-        res.json(event);
+        return res.status(404).send(`L'évènement avec l'identifiant ${eventId} est introuvable`);
       }
+      // On vérifie que l'utilisateur authentifié est le créateur de l'événement.
+      if (req.user.userId !== event.creatorId) {
+        return res.status(403).json({ error: 'Seul le créateur de l\'événement peut le modifier.' });
+      }
+      const {
+        title,
+        region,
+        zipCode,
+        city,
+        street,
+        description,
+        maxNbParticipants,
+        startingTime,
+        endingTime,
+      } = req.body;
+
+      if (title) event.title = title;
+      if (region) event.region = region;
+      if (zipCode) event.zipCode = zipCode;
+      if (city) event.city = city;
+      if (street) event.street = street;
+      if (description) event.description = description;
+      if (maxNbParticipants) event.maxNbParticipants = maxNbParticipants;
+      if (startingTime) event.startingTime = startingTime;
+      if (endingTime) event.endingTime = endingTime;
+
+      // Sauvegarde des champs dans la BDD.
+      // UPDATE events
+      // SET title = 'valeur_title', region = 'valeur_region',
+      // zip_code = 'valeur_zip_code', city = 'valeur_city',
+      // street = 'valeur_street', description = 'valeur_description',
+      // maxNbParticipants = 'maxNbParticipants',
+      // starting_time = 'valeur_starting_time',
+      // ending_time = 'valeur_ending_time',
+      // created_at = 'valeur_created_at',
+      // updated_at = 'valeur_updated_at'
+      // WHERE id = 'valeur_event.id';
+      await event.save();
+      return res.json(event);
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   },
 
@@ -301,14 +306,17 @@ const eventCtrl = {
       const event = await Events.findByPk(eventId);
 
       if (!event) {
-        res.status(404).send(`L'évènement avec l'identifiant ${eventId} est introuvable`);
-      } else {
-        await event.destroy();
-        res.json({ message: `L'évènement avec l'identifiant ${eventId} vient d'être supprimé` });
+        return res.status(404).send(`L'évènement avec l'identifiant ${eventId} est introuvable`);
       }
+      // Vérifie que l'utilisateur authentifié est le créateur de l'événement.
+      if (req.user.userId !== event.creatorId) {
+        return res.status(403).json({ error: "Seul le créateur de l'événement peut le supprimer." });
+      }
+
+      await event.destroy();
+      return res.json({ message: `L'évènement avec l'identifiant ${eventId} vient d'être supprimé` });
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   },
 };

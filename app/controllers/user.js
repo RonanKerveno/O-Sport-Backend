@@ -725,8 +725,6 @@ const userCtrl = {
         ],
       });
       const nbFavoriteSports = user.favoriteSports.length;
-      console.log('ArrayCount : ', JSON.stringify(user, null, 2));
-      console.log(`nb de sports favoris : ${nbFavoriteSports}`);
 
       const sport = await Sports.findByPk(sportId);
 
@@ -736,7 +734,6 @@ const userCtrl = {
 
       // On vérifie que l'utilisateur n'a pas déjà ce sport en favori
 
-      console.log(req.params.sportId);
       // if (user.favoriteSports.sportId === req.params.sportId) {
       //  return res.json({ message: 'Sport favori déjà choisi!' });
       // }

@@ -1,7 +1,7 @@
-const authenticateJWT = require('./authentication');
+const authenticationJWT = require('./authentication');
 
 const authorized = (req, res, next) => {
-  authenticateJWT(req, res, () => {
+  authenticationJWT(req, res, () => {
     const { userId } = req.params;
 
     // Vérifier que l'utilisateur est le propriétaire du profil ou un administrateur

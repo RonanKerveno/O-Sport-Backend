@@ -1,12 +1,12 @@
 const router = require('express').Router();
 const userCtrl = require('../controllers/user');
 const authCtrl = require('../controllers/authentication');
-const { authenticationJWT, authorized, isLogged } = require('../middlewares');
+const { authenticationJWT, authorized } = require('../middlewares');
 
 // connexion utilisateur
 router.post('/login', authCtrl.login);
 // infos de base sur utilisateur conecté
-router.get('/login-info', isLogged, authCtrl.loginInfo);
+router.get('/login-info', authCtrl.loginInfo);
 // Déconnexion utilisateur
 router.post('/logout', authenticationJWT, authCtrl.logout);
 // récupère tous les utilisateurs.
