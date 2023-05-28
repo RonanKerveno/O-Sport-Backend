@@ -250,9 +250,10 @@ const eventCtrl = {
       if (!event) {
         return res.status(404).send(`L'évènement avec l'identifiant ${eventId} est introuvable`);
       }
-      // On vérifie que l'utilisateur authentifié est le créateur de l'événement.
-      if (req.user.userId !== event.creatorId) {
-        return res.status(403).json({ error: 'Seul le créateur de l\'événement peut le modifier.' });
+      // Vérifie que l'utilisateur authentifié est le créateur de l'événement
+      // ou un administrateur.
+      if (req.user.userId !== event.creatorId && !req.user.isAdmin) {
+        return res.status(403).json({ error: "Seul le créateur de l'événement ou un administrateur peut le modifier/supprimer." });
       }
       const {
         title,
@@ -309,11 +310,11 @@ const eventCtrl = {
       if (!event) {
         return res.status(404).send(`L'évènement avec l'identifiant ${eventId} est introuvable`);
       }
-      // Vérifie que l'utilisateur authentifié est le créateur de l'événement.
-      if (req.user.userId !== event.creatorId) {
-        return res.status(403).json({ error: "Seul le créateur de l'événement peut le supprimer." });
+      // Vérifie que l'utilisateur authentifié est le créateur de l'événement
+      // ou un administrateur.
+      if (req.user.userId !== event.creatorId && !req.user.isAdmin) {
+        return res.status(403).json({ error: "Seul le créateur de l'événement ou un administrateur peut le modifier/supprimer." });
       }
-
       await event.destroy();
       return res.json({ message: `L'évènement avec l'identifiant ${eventId} vient d'être supprimé` });
     } catch (error) {
