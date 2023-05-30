@@ -44,7 +44,8 @@ const userCtrl = {
     const { userId } = req.params;
 
     try {
-      // SELECT id, isAdmin, userName, region, city, description FROM users WHERE id = $1;
+      // SELECT id, isAdmin, userName, region, city, description
+      // FROM users WHERE id = 'valeur_user.id';
       const user = await Users.findByPk(userId, {
         attributes: { exclude: ['email', 'password', 'lastName', 'firstName', 'zipCode', 'street'] },
         include: [
