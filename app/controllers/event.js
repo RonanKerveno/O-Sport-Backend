@@ -216,7 +216,8 @@ const eventCtrl = {
       });
       await eventUsers.addCreatorToEvent(newEvent.id, newEvent.creatorId);
       res.json({
-        message: 'Le nouvel évènement sportif a bien été créé',
+        message: 'Le nouvel événement sportif a bien été créé',
+        eventId: newEvent.id,
       });
     } catch (error) {
       res.json({ error: error.message });
