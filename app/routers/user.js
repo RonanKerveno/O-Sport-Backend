@@ -20,6 +20,8 @@ router.post('/', userCtrl.createOneUser);
 router.patch('/:userId', authorized, userCtrl.updateOneUser);
 // supprime un utilisateur ciblé par l’ID.
 router.delete('/:userId', authorized, userCtrl.deleteOneUser);
+// supprime un utilisateur ciblé par l’ID sans supprimer le cookie d'authentification.
+router.delete('/:userId/from-admin', authorized, userCtrl.deleteOneUserFromAdmin);
 // récupère la liste des événements auxquels un utilisateur ayant l’ID spécifié participe.
 router.get('/:userId/events', userCtrl.getAllEventsFromOneUser);
 // récupère la liste des événements créés par l'utilisateur ayant l’ID spécifié.

@@ -389,6 +389,24 @@ const userCtrl = {
  * @param {object} res - The response object.
  * @returns {Promise<void>} events with creator, sport and participants
  */
+  deleteOneUserFromAdmin: async (req, res) => {
+    try {
+      // DELETE FROM users
+      // WHERE id = 'valeur_users.id';
+      const { userId } = req.params;
+      const user = await Users.findByPk(userId);
+
+      if (!user) {
+        return res.status(404).send(`Utilisateur avec l'identifiant  ${userId} introuvable`);
+      }
+      await user.destroy();
+
+      return res.json({ message: `L'utilisateur avec l'identifiant ${userId} vient d'être supprimé` });
+    } catch (error) {
+      logger.log(error);
+      return res.status(500).json({ error: error.message });
+    }
+  },
   getAllEventsFromOneUser: async (req, res) => {
     try {
       const { userId } = req.params;
