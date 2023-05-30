@@ -16,7 +16,8 @@ const userCtrl = {
  */
   getAllUsers: async (req, res) => {
     try {
-      // SELECT id, isAdmin, userName, region, city, description FROM users;
+      // SELECT id, is_admin, user_name, date_of_birth, gender,
+      // region, city, description FROM users;
       const users = await Users.findAll({
         attributes: { exclude: ['email', 'password', 'lastName', 'firstName', 'zipCode', 'street'] },
         include: [
@@ -44,7 +45,8 @@ const userCtrl = {
     const { userId } = req.params;
 
     try {
-      // SELECT id, isAdmin, userName, region, city, description FROM users WHERE id = $1;
+      // SELECT id, is_admin, user_name, date_of_birth, gender,
+      // region, city, description FROM users WHERE id = $1;
       const user = await Users.findByPk(userId, {
         attributes: { exclude: ['email', 'password', 'lastName', 'firstName', 'zipCode', 'street'] },
         include: [
@@ -76,7 +78,8 @@ const userCtrl = {
     const { userId } = req.params;
 
     try {
-      // SELECT id, username, email, firstname, lastname, password FROM users WHERE id = $1;
+      // SELECT id, user_name, email, first_name,
+      // last_name, zip_code, street FROM users WHERE id = $1;
       const user = await Users.findByPk(userId, {
         attributes: ['id', 'userName', 'email', 'firstName', 'lastName', 'zipCode', 'street'],
       });
@@ -201,11 +204,11 @@ const userCtrl = {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // INSERT INTO users (first_name, last_name, user_name, is_admin,
-      // email, password, date_of_birth, gender, region, zip_code, city, street)
+      // email, password, date_of_birth, gender, region, zip_code, city, street, description)
       // VALUES ('valeur_first_name', 'valeur_last_name',
       // 'valeur_user_name', false, 'valeur_email', 'valeur_password',
       // 'valeur_date_of_birth', 'valeur_gender',
-      // 'valeur_region', 'valeur_zip_code', 'valeur_city', 'valeur_street');
+      // 'valeur_region', 'valeur_zip_code', 'valeur_city', 'valeur_street', 'valeur_description');
       // Création de l'utilisateur avec les champs recquis.
       const newUser = await Users.create({
         firstName,
@@ -280,7 +283,8 @@ const userCtrl = {
       // 'valeur_email', password = 'valeur_password', date_of_birth =
       // 'valeur_date_of_birth', gender = 'valeur_gender', region =
       // 'valeur_region', zip_code = 'valeur_zip_code', city =
-      // 'valeur_city', street = 'valeur_street'
+      // 'valeur_city', street = 'valeur_street', description =
+      // 'valeur_description'
       // WHERE id = 'valeur_users.id';
       if (!user) {
         return res.status(404).send(`Impossible de trouver l'utilisateur avec l'identifiant ${userId}`);
@@ -356,7 +360,7 @@ const userCtrl = {
  */
   deleteOneUser: async (req, res) => {
     try {
-      // DELETE FROM users
+      // DELETE * FROM users
       // WHERE id = 'valeur_users.id';
       const { userId } = req.params;
       const user = await Users.findByPk(userId);
@@ -392,7 +396,17 @@ const userCtrl = {
   getAllEventsFromOneUser: async (req, res) => {
     try {
       const { userId } = req.params;
-
+      // SELECT events.*, creator.user_name AS creator_username,
+      // sport.name AS sport_name, participants.user_name AS
+      // participant_username
+      // FROM events
+      // INNER JOIN users creator ON events.creator_id = creator.id
+      // INNER JOIN sports sport ON events.sport_id = sport.id
+      // INNER JOIN users_join_events uje ON events.id = uje.
+      // event_id
+      // INNER JOIN users participants ON uje.user_id =
+      // participants.id
+      // WHERE participants.id = 1 AND events.ending_time > now();;
       const user = await Users.findByPk(userId);
 
       if (!user) {
@@ -442,7 +456,13 @@ const userCtrl = {
   getAllEventsCreatedByOneUser: async (req, res) => {
     try {
       const { userId } = req.params;
-
+      // SELECT events.*, creator.user_name AS creator_username,
+      // sport.name AS sport_name
+      // FROM events
+      // INNER JOIN users creator ON events.creator_id = creator.id
+      // INNER JOIN sports sport ON events.sport_id = sport.id
+      // WHERE creator_id = 'valeur_users.id' AND events.
+      // ending_time > now();
       const user = await Users.findByPk(userId);
 
       if (!user) {
@@ -489,6 +509,17 @@ const userCtrl = {
       // Recherche des événements auxquels l'utilisateur participe
       // La méthode "getUserEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
+      // SELECT events.*, creator.user_name AS creator_username,
+      // sport.name AS sport_name, participants.user_name AS
+      // participant_username
+      // FROM events
+      // INNER JOIN users creator ON events.creator_id = creator.id
+      // INNER JOIN sports sport ON events.sport_id = sport.id
+      // INNER JOIN users_join_events uje ON events.id = uje.
+      // event_id
+      // INNER JOIN users participants ON uje.user_id =
+      // participants.id
+      // WHERE participants.id = 1 AND events.ending_time < now();
       const events = await user.getUserEvents({
         where: {
           endingTime: { [Op.lte]: new Date() },
@@ -542,6 +573,13 @@ const userCtrl = {
       // Recherche des événements créés par l'uilisateur
       // La méthode "getCreatedEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
+      // SELECT events.*, creator.user_name AS creator_username,
+      // sport.name AS sport_name
+      // FROM events
+      // INNER JOIN users creator ON events.creator_id = creator.id
+      // INNER JOIN sports sport ON events.sport_id = sport.id
+      // WHERE creator_id = 'valeur_users.id' AND events.
+      // ending_time < now();
       const events = await user.getCreatedEvents({
         where: {
           endingTime: { [Op.lte]: new Date() },
@@ -572,8 +610,11 @@ const userCtrl = {
  */
   addOneUserToOneEvent: async (req, res) => {
     try {
-      // INSERT INTO users_join_events (user_id, event_id)
-      // VALUES ('valeur_user_id', 'valeur_event_id');
+    // INSERT INTO users_join_events (user_id, event_id)
+    // SELECT 'valeur_user_id', 'valeur_event_id'
+    // WHERE NOT EXISTS (
+    //  SELECT * FROM events WHERE id = 'valeur_events.id' AND events.starting_time < NOW()
+    // );
       const { userId, eventId } = req.params;
 
       const user = await Users.findByPk(userId);
@@ -711,7 +752,10 @@ const userCtrl = {
   addOneSportToOneUser: async (req, res) => {
     try {
       // INSERT INTO users_like_sports (user_id, sport_id)
-      // VALUES ('valeur_user_id', 'valeur_sport_id');
+      // VALUES ('valeur_user_id', 'valeur_sport_id')
+      // SELECT 'valeur_user_id', s.name
+      // FROM sports AS s
+      // WHERE s.id = 'valeur_sport_id';
       const { userId, sportId } = req.params;
 
       const user = await Users.findByPk(userId, {
