@@ -40,7 +40,7 @@ const authController = {
 
       // Identifiants OK = génération du token JWT.
       const token = jwt.sign(
-        { userId: user.id, email: user.email, isAdmin: user.isAdmin },
+        { userId: user.id, userName: user.userName, isAdmin: user.isAdmin },
         process.env.SECRET_KEY,
         { expiresIn: '24h' },
       );
@@ -92,8 +92,10 @@ const authController = {
           });
         });
 
-        const { userId, isAdmin } = user;
-        return res.json({ success: true, userId, isAdmin });
+        const { userId, userName, isAdmin } = user;
+        return res.json({
+          success: true, userId, userName, isAdmin,
+        });
       } catch (error) {
         return res.status(200).json({ success: false, message: 'Aucun utilisateur connecté' });
       }
