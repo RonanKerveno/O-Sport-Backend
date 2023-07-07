@@ -12,7 +12,7 @@ const eventCtrl = {
  * @param {object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with the list of events or an error message.
  */
-  getAllEvents: async (req, res) => {
+  getAllEventsToCome: async (req, res) => {
     try {
       // SELECT * FROM sports;
       const events = await Events.findAll({
@@ -21,6 +21,42 @@ const eventCtrl = {
           // on exclue les évènements déjà terminés
           endingTime: { [Op.gte]: new Date() },
         },
+        include: [
+          {
+            model: Users,
+            as: 'creator',
+            attributes: ['userName'],
+          },
+          {
+            model: Sports,
+            as: 'sport',
+            attributes: ['name'],
+          },
+          {
+            model: Users,
+            as: 'eventUsers',
+            attributes: ['id', 'userName'],
+          },
+        ],
+      });
+      res.json(events);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
+  /**
+* Retrieves all upcoming events.
+*
+* @param {object} req - The request object.
+* @param {object} res - The response object.
+* @returns {Promise<void>} A Promise that resolves with the list of events or an error message.
+*/
+  getAllEvents: async (req, res) => {
+    try {
+      // SELECT * FROM sports;
+      const events = await Events.findAll({
+        attributes: { exclude: ['description'] },
         include: [
           {
             model: Users,
@@ -61,9 +97,6 @@ const eventCtrl = {
         // on exclue les évènements déjà terminés
         where: {
           id: eventId,
-          endingTime: {
-            [Op.gte]: new Date(),
-          },
         },
         include: [
           {

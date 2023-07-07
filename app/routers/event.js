@@ -2,8 +2,10 @@ const router = require('express').Router();
 const eventCtrl = require('../controllers/event');
 const { authenticationJWT } = require('../middlewares');
 
-// récupère la liste de tous les événements
-router.get('/', eventCtrl.getAllEvents);
+// récupère la liste de tous les événements à venir
+router.get('/', eventCtrl.getAllEventsToCome);
+// récupère la liste de tous les événements même passés
+router.get('/all', eventCtrl.getAllEvents);
 // récupère l’événement ciblé par l’ID.
 router.get('/:id', eventCtrl.getOneEvent);
 // crée un nouvel événement.
