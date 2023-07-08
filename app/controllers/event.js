@@ -290,6 +290,7 @@ const eventCtrl = {
         return res.status(403).json({ error: "Seul le créateur de l'événement ou un administrateur peut le modifier/supprimer." });
       }
       const {
+        sportId,
         title,
         region,
         zipCode,
@@ -301,6 +302,7 @@ const eventCtrl = {
         endingTime,
       } = req.body;
 
+      if (sportId) event.sportId = sportId;
       if (title) event.title = title;
       if (region) event.region = region;
       if (zipCode) event.zipCode = zipCode;
