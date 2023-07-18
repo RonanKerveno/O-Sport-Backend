@@ -17,6 +17,7 @@ const eventUsers = {
       eventUsers.countUsersFromOneEvent(eventId, userId);
       return;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
     }
   },

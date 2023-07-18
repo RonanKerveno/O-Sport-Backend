@@ -1,7 +1,6 @@
 const { Op } = require('sequelize');
 const { Events, Users, Sports } = require('../models');
 const eventUsers = require('../services/eventUsers');
-// const location = require('../services/location');
 
 const eventCtrl = {
 
@@ -39,7 +38,22 @@ const eventCtrl = {
           },
         ],
       });
-      res.json(events);
+
+      const formattedEvents = events.map((event) => {
+        const rawEvent = event.toJSON();
+
+        // Check if creator exists before accessing its properties
+        if (rawEvent.creator && rawEvent.creator.userName === null) {
+          rawEvent.creator.userName = 'Profil_Supprimé';
+        } else if (!rawEvent.creator) {
+          // If creator doesn't exist, create a new one
+          rawEvent.creator = { userName: 'Profil_Supprimé' };
+        }
+
+        return rawEvent;
+      });
+
+      res.json(formattedEvents);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -75,7 +89,18 @@ const eventCtrl = {
           },
         ],
       });
-      res.json(events);
+
+      const formattedEvents = events.map((event) => {
+        const rawEvent = event.toJSON();
+        if (rawEvent.creator && rawEvent.creator.userName === null) {
+          rawEvent.creator.userName = 'Profil_Supprimé';
+        } else if (!rawEvent.creator) {
+          rawEvent.creator = { userName: 'Profil_Supprimé' };
+        }
+        return rawEvent;
+      });
+
+      res.json(formattedEvents);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -116,10 +141,17 @@ const eventCtrl = {
           },
         ],
       });
+
       if (!event) {
         res.status(404).json('Evènement introuvable');
       } else {
-        res.json(event);
+        const rawEvent = event.toJSON();
+        if (rawEvent.creator && rawEvent.creator.userName === null) {
+          rawEvent.creator.userName = 'Profil_Supprimé';
+        } else if (!rawEvent.creator) {
+          rawEvent.creator = { userName: 'Profil_Supprimé' };
+        }
+        res.json(rawEvent);
       }
     } catch (error) {
       res.status(500).json(error);

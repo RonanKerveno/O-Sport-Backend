@@ -4,15 +4,7 @@ const { Users } = require('../models');
 
 const authController = {
   /**
-   * Login function for user authentication (token and cookie).
-   *
-   * @param {Object} req - The request object.
-   * @param {Object} req.body - The request body.
-   * @param {string} req.body.email - The email of the user.
-   * @param {string} req.body.password - The password of the user.
-   * @param {Object} res - The response object.
-   * @returns {Object} The response JSON object.
-   * @throws {Object} If an error occurs during the login process, it returns an error JSON object.
+   * Methode login pour la connexion de l'utilisateur (token JWT et cookie).
    */
   login: async (req, res) => {
     try {
@@ -66,16 +58,7 @@ const authController = {
     }
   },
   /**
- * Retrieves decoded information from the JWT token.
- *
- * @param {Object} req - The request object.
- * @param {Object} req.user - The decoded user information from the JWT token.
- * @param {number} req.user.userId - The user ID.
- * @param {boolean} req.user.isAdmin - Indicates if the user is an admin.
- * @param {Object} res - The response object.
- * @returns {Object} The response JSON object containing the decoded user information.
- * @throws {Object} If an error occurs while retrieving the login
- * information, it returns an error JSON object.
+ * Renvoi au client les informations du token de sa requête
  */
   loginInfo: async (req, res) => {
     const { token } = req.cookies;
@@ -104,12 +87,7 @@ const authController = {
     }
   },
   /**
- * Logout function for user session termination.
- *
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Object} The response JSON object indicating successful logout.
- * @throws {Object} If an error occurs during the logout process, it returns an error JSON object.
+ * Méthode Logout pour mettre fin à la session utilisateur.
  */
   logout: async (req, res) => {
     try {
