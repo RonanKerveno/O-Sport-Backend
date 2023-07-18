@@ -434,7 +434,7 @@ const userCtrl = {
       // Recherche des événements auxquels l'utilisateur participe
       // La méthode "getUserEvents" est créée par Sequelize via les
       // infos fournies dans les modèles.
-      const events = await user.getUserEvents({
+      const rawEvents = await user.getUserEvents({
         include: [
           {
             model: Users,
@@ -452,6 +452,18 @@ const userCtrl = {
             attributes: ['userName'],
           },
         ],
+      });
+
+      const events = rawEvents.map((event) => {
+        const rawEvent = event.toJSON();
+
+        if (rawEvent.creator && rawEvent.creator.userName === null) {
+          rawEvent.creator.userName = 'Profil_Supprimé';
+        } else if (!rawEvent.creator) {
+          rawEvent.creator = { userName: 'Profil_Supprimé' };
+        }
+
+        return rawEvent;
       });
 
       // On retourne la liste des événements
@@ -628,11 +640,11 @@ const userCtrl = {
  */
   addOneUserToOneEvent: async (req, res) => {
     try {
-    // INSERT INTO users_join_events (user_id, event_id)
-    // SELECT 'valeur_user_id', 'valeur_event_id'
-    // WHERE NOT EXISTS (
-    //  SELECT * FROM events WHERE id = 'valeur_events.id' AND events.starting_time < NOW()
-    // );
+      // INSERT INTO users_join_events (user_id, event_id)
+      // SELECT 'valeur_user_id', 'valeur_event_id'
+      // WHERE NOT EXISTS (
+      //  SELECT * FROM events WHERE id = 'valeur_events.id' AND events.starting_time < NOW()
+      // );
       const { userId, eventId } = req.params;
 
       const user = await Users.findByPk(userId);
